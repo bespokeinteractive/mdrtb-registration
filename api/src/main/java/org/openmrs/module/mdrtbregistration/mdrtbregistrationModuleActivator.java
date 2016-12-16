@@ -11,8 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.registrationApp;
-
+package org.openmrs.module.mdrtbregistration;
 
 import org.apache.commons.logging.Log; 
 import org.apache.commons.logging.LogFactory;
@@ -22,7 +21,7 @@ import org.openmrs.module.ModuleActivator;
 /**
  * This class contains the logic that is run every time this module is either started or stopped.
  */
-public class RegistrationAppModuleActivator implements ModuleActivator {
+public class mdrtbregistrationModuleActivator implements ModuleActivator {
 	
 	protected Log log = LogFactory.getLog(getClass());
 		

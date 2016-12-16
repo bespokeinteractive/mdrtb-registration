@@ -28,7 +28,7 @@
 	<!-- / Required Modules -->
 	
 	<!-- Module Activator -->
-	<activator>${project.parent.groupId}.${project.parent.artifactId}.RegistrationAppModuleActivator</activator>
+	<activator>${project.parent.groupId}.${project.parent.artifactId}.mdrtbregistrationModuleActivator</activator>
 
 	<!-- Internationalization -->
 	<!-- All message codes should start with ${project.parent.artifactId}. -->
