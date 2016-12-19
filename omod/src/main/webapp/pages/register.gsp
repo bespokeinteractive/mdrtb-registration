@@ -48,49 +48,12 @@
 		PAGE = {
 			/** SUBMIT */
 			submit: function () {
-
-				// Capitalize fullname and relative name
-	//            relativeNameInCaptital = StringUtils.capitalize(jq("#patientRelativeName").val());
-				relativeNameInCaptital = (jq("#patientRelativeName").val()).toUpperCase();
-				jq("#patientRelativeName").val(relativeNameInCaptital);
-
-				// Validate and submit
-				if (this.validateRegisterForm()) {
-					jq("#patientRegistrationForm").submit();
-
+				if (jq('#names').val().split(' ').length == 1){
+					jq().toastmessage('showErrorToast', 'Kindly provide more than one Name');
+					return false;
 				}
-			},
-
-			checkNationalID: function () {
-				nationalId = jq("#patientNationalId").val();
-				jq.ajax({
-					type: "GET",
-					url: '${ ui.actionLink("registration", "registrationUtils", "main") }',
-					dataType: "json",
-					data: ({
-						nationalId: nationalId
-					}),
-					success: function (data) {
-	//                    jq("#divForNationalId").html(data);
-						validateNationalID(data);
-					}
-				});
-			},
-
-			checkPassportNumber: function () {
-				passportNumber = jq("#passportNumber").val();
-				jq.ajax({
-					type: "GET",
-					url: '${ ui.actionLink("registration", "registrationUtils", "main") }',
-					dataType: "json",
-					data: ({
-						passportNumber: passportNumber
-					}),
-					success: function (data) {
-	//                    jq("#divForpassportNumber").html(data);
-						validatePassportNumber(data);
-					}
-				});
+				
+				jq("#registration-form").submit();
 			},
 
 			/** VALIDATE BIRTHDATE */
@@ -396,7 +359,7 @@
 			
 			<field>
 				<label for="patientPhoneNumber">Phone Number:</label>
-				<input id="patientPhoneNumber" name="person.attribute.16" type="text" class=""/>
+				<input id="patientPhoneNumber" name="person.attribute.8" type="text" class=""/>
 			</field>
 
 			<field>
