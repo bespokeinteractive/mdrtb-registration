@@ -27,7 +27,7 @@
             constrainInput: false
         }).on("change", function (dateText) {
             jq("#birthdate").val(this.value);
-            PAGE.checkBirthDate();
+            Page.checkBirthDate();
         });
 		
 		jq('#names, #gender, #birthdate, #address1, #cityVillage').change(function(){
@@ -45,7 +45,7 @@
 			}
 		});
 		
-		PAGE = {
+		Page = {
 			/** SUBMIT */
 			submit: function () {
 				if (jq('#names').val().split(' ').length == 1){
@@ -56,12 +56,12 @@
 				jq("#registration-form").submit();
 			},
 
-			/** VALIDATE BIRTHDATE */
+			/** CHECK BIRTHDATE */
 			checkBirthDate: function () {
 				var submitted = jq("#birthdate").val();
 				jq.ajax({
 					type: "GET",
-					url: '${ ui.actionLink("registration", "registrationUtils", "processPatientBirthDate") }',
+					url: '${ ui.actionLink("mdrtbregistration", "registrationUtils", "processPatientBirthDate") }',
 					dataType: "json",
 					data: ({
 						birthdate: submitted
@@ -82,9 +82,51 @@
 							jq("#calendar").val(data.datemodel.birthdate);
 
 						} else {
-							jq().toastmessage('showErrorToast', 'Age in wrong format');
+							jq().toastmessage('showErrorToast', 'Birthdate/Age is in wrong format');
 							jq("#birthdate").val("");
-							goto_previous_tab(5);
+							jq("#estimatedAge").html("");
+						}
+					},
+					error: function (xhr, ajaxOptions, thrownError) {
+						alert(thrownError);
+					}
+
+				});
+			},
+			
+			/** VALIDATE PASSED BIRTHDATE */
+			validateBirthDate: function () {
+				var submitted = jq("#birthdate").val();				
+				if (submitted == ''){
+					return false;
+				}
+				
+				jq.ajax({
+					type: "GET",
+					url: '${ ui.actionLink("mdrtbregistration", "registrationUtils", "processPatientBirthDate") }',
+					dataType: "json",
+					data: ({
+						birthdate: submitted
+					}),
+					success: function (data) {
+						if (data.datemodel.error == undefined) {
+							if ('${estimate}' == 'true') {
+								jq("#estimatedAge").html(data.datemodel.age + '<span> (Estimated)</span>');
+								jq("#birthdateEstimated").val("true")
+							} else {
+								jq("#estimatedAge").html(data.datemodel.age);
+								jq("#birthdateEstimated").val("false");
+							}
+							
+							jq("#estimatedAgeInYear").val(data.datemodel.ageInYear);
+							jq("#birthdate").val(data.datemodel.birthdate);
+							jq("#calendar").val(data.datemodel.birthdate);
+
+						} else {
+							jq().toastmessage('showErrorToast', 'Birthdate/Age is in wrong format');
+							jq("#birthdate").val("");
+							jq("#estimatedAge").html("");
+							jq("#estimatedAgeInYear").val("");
 						}
 					},
 					error: function (xhr, ajaxOptions, thrownError) {
@@ -96,7 +138,8 @@
 		};
 		//Nothing
 		
-		jq('#gender').val('${gender}');
+		jq('#gender').val('${gender}');		
+		Page.validateBirthDate();
     });
 	
 	function goto_next(tabIndex){
@@ -261,6 +304,12 @@
 	#stateProvince, #address2{
 		text-transform: capitalize;
 	}
+	#estimatedAge {
+		padding-left: 20%;
+	}
+	#estimatedAge span{
+		color: #f26522;
+	}
 </style>
 
 <div class="clear"></div>
@@ -314,19 +363,21 @@
 			</field>
 			
 			<field>
+				<label for="birthdate">Date of Birth:<span class="mandatory">*</span></label>
+				<div class="addon"><i class="icon-calendar small">&nbsp;</i></div>
+				<input type="text" id="birthdate" name="patient.birthdate" value="${birthdate?birthdate:''}" class="required form-textbox1" placeholder="DD/MM/YYYY"/>
+				<input type="hidden" id="birthdateEstimated" name="patient.birthdateEstimated" />
+				<div id="estimatedAge"></div>
+			</field>
+			
+			<field>
 				<label for="gender">Gender:<span class="mandatory">*</span></label>
 				<select id="gender" name="patient.gender" class="required">
 					<option value=""></option>
 					<option value="M">Male</option>
 					<option value="F">Female</option>
 				</select>
-			</field>
-			
-			<field>
-				<label for="birthdate">Date of Birth:<span class="mandatory">*</span></label>
-				<div class="addon"><i class="icon-calendar small">&nbsp;</i></div>
-				<input type="text" id="birthdate" name="patient.birthdate" class="required form-textbox1" placeholder="DD/MM/YYYY"/>
-			</field>
+			</field>			
 			
 			<div class="onerow" style="margin-top:50px">
 				<a class="button confirm" onclick="goto_next(1)" style="float:right; display:inline-block; margin-right: 2px">

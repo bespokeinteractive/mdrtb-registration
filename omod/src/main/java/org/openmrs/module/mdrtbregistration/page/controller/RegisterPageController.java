@@ -27,7 +27,7 @@ public class RegisterPageController {
             @RequestParam(value = "names", required=false) String names,
             @RequestParam(value = "gender", required=false) String gender,
             @RequestParam(value = "birthdate", required=false) String birthdate,
-            @RequestParam(value = "birthEstimate", required=false) String birthEstimate,
+            @RequestParam(value = "estimate", required=false) String estimate,
             PageModel model,
             UiUtils ui) {
 
@@ -35,9 +35,10 @@ public class RegisterPageController {
             gender="";
         }
 
+        model.addAttribute("birthdate", birthdate);
         model.addAttribute("names", names);
         model.addAttribute("gender", gender);
-        model.addAttribute("birthdate", birthdate);
+        model.addAttribute("estimate", estimate);
 
         return null;
     }
