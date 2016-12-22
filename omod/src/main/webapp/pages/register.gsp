@@ -11,13 +11,7 @@
 %>
 
 <script>
-    var NavigatorController;
-	var emrMessages = {};
-	
     jq(function () {
-		emrMessages["requiredField"] = "Required Field";		
-        NavigatorController = new KeyboardController();
-		
 		jq('#birthdate').datepicker({
             yearRange: 'c-100:c',
             maxDate: '0',
@@ -48,8 +42,20 @@
 		Page = {
 			/** SUBMIT */
 			submit: function () {
+				if (jq('#identifierValue').val() == ''){
+					jq().toastmessage('showErrorToast', 'Kindly provide patient TB Identifier');
+					return false;
+				}
 				if (jq('#names').val().split(' ').length == 1){
-					jq().toastmessage('showErrorToast', 'Kindly provide more than one Name');
+					jq().toastmessage('showErrorToast', 'Kindly provide atleast two names');
+					return false;
+				}
+				if (jq('#gender').val() == ''){
+					jq().toastmessage('showErrorToast', 'Kindly specify the patient gender');
+					return false;
+				}
+				if (jq('#birthdate').val() == ''){
+					jq().toastmessage('showErrorToast', 'Kindly specify the patient birthdate');
 					return false;
 				}
 				
@@ -141,79 +147,17 @@
 		jq('#gender').val('${gender}');		
 		Page.validateBirthDate();
     });
-	
-	function goto_next(tabIndex){
-		var currents = '';
-		
-		if (tabIndex == 1) {
-            while (jq(':focus') != jq('#address1')) {
-				console.log('currents...'+ currents);
-				
-				
-                if (currents == jq(':focus').attr('id')) {
-                    NavigatorController.stepForward();
-                    jq("#ui-datepicker-div").hide();
-                    break;
-                }
-                else {
-                    currents = jq(':focus').attr('id');
-                }
-
-                if (jq(':focus').attr('id') == 'address1') {
-                    jq("#ui-datepicker-div").hide();
-                    break;
-                }
-                else {
-                    NavigatorController.stepForward();
-                }
-            }
-        }
-		else if (tabIndex == 2) {
-			while (jq(':focus') != jq('#lastItem')) {
-                if (currents == jq(':focus').attr('id')) {
-                    NavigatorController.stepForward();
-                    jq("#ui-datepicker-div").hide();
-                    break;
-                }
-                else {
-                    currents = jq(':focus').attr('id');
-                }
-
-                if (jq(':focus').attr('id') == 'lastItem') {
-                    jq("#ui-datepicker-div").hide();
-                    break;
-                }
-                else {
-                    NavigatorController.stepForward();
-                }
-            }
-		}
-	}
-	
-	function goto_previous(tabIndex){
-		if (tabIndex == 1) {
-            while (jq(':focus') != jq('#identifierValue')) {
-                if (jq(':focus').attr('id') == 'identifierValue' || jq(':focus').attr('id') == 'names'  || jq(':focus').attr('id') == 'birthdate') {
-                    jq("#ui-datepicker-div").hide();
-                    break;
-                }
-                else {
-                    NavigatorController.stepBackward();
-                }
-            }
-        }
-        else if (tabIndex == 2) {
-			
-        }
-	}
 </script>
 
-<style>
+<style>	
 	.toast-item {
 		background-color: #222;
 	}
 	.name {
 		color: #f26522;
+	}
+	.new-patient-header {
+		padding: 15px 10px 5px;
 	}
 	.new-patient-header .demographics h1 span {
 		font-size: 1.3em;
@@ -235,62 +179,37 @@
 	.identifiers{
 		margin-top:20px;
 	}
-	.simple-form-ui{
-		margin-top: 2px;
-	}
-	.simple-form-ui .field-error, .simple-form-ui form .field-error{
-		margin-left: 20%;
-	}
 	ul#formBreadcrumb {
 		width: 25%;
-	}
-	.simple-form-ui section, .simple-form-ui #confirmation, .simple-form-ui form section, .simple-form-ui form #confirmation {
-		box-sizing: border-box;
-		width: 75%;
-		min-height: 200px;
 	}
 	form label, .form label {
 		display: inline-block;
 		width: 19%;
 	}
-	.simple-form-ui input, .simple-form-ui form input, 
-	.simple-form-ui select, .simple-form-ui form select, 
-	.simple-form-ui ul.select, .simple-form-ui form ul.select {
+	input, form input, 
+	select, form select, 
+	ul.select, form ul.select {
 		min-width: 0;
+		display: inline-block;
 		width: 80%;
 		height: 38px;
 	}
-	.simple-form-ui textarea, .simple-form-ui form textarea {
+	textarea, form textarea {
 		display: inline-block;
 		min-width: 0;
 		width: 80%;
 	}
-	.simple-form-ui section fieldset select:focus, .simple-form-ui section fieldset input:focus, .simple-form-ui section #confirmationQuestion select:focus, .simple-form-ui section #confirmationQuestion input:focus, .simple-form-ui #confirmation fieldset select:focus, .simple-form-ui #confirmation fieldset input:focus, .simple-form-ui #confirmation #confirmationQuestion select:focus, .simple-form-ui #confirmation #confirmationQuestion input:focus, .simple-form-ui form section fieldset select:focus, .simple-form-ui form section fieldset input:focus, .simple-form-ui form section #confirmationQuestion select:focus, .simple-form-ui form section #confirmationQuestion input:focus, .simple-form-ui form #confirmation fieldset select:focus, .simple-form-ui form #confirmation fieldset input:focus, .simple-form-ui form #confirmation #confirmationQuestion select:focus, .simple-form-ui form #confirmation #confirmationQuestion input:focus{
-		outline: 0px none #007fff;
-	}
 	form input:focus, form select:focus, form textarea:focus, form ul.select:focus, .form input:focus, .form select:focus, .form textarea:focus, .form ul.select:focus {
 		outline: 0px none #007fff;
-	}
-	.mandatory{
-		color: #f00;
-		float: right;
-		padding-right: 5px;
 	}
 	.addon {
 		color: #f26522;
 		display: inline-block;
 		float: right;
-		margin: 15px 0 0 548px;
+		margin: 12px 0 0 510px;
 		position: absolute;
 	}
-	.simple-form-ui section fieldset textarea.error, 
-	.simple-form-ui section #confirmationQuestion textarea.error, 
-	.simple-form-ui #confirmation fieldset textarea.error, 
-	.simple-form-ui form section fieldset textarea.error, 
-	.simple-form-ui form #confirmation fieldset textarea.error, 
-	.simple-form-ui form section #confirmationQuestion textarea.error, 
-	.simple-form-ui #confirmation #confirmationQuestion textarea.error, 
-	.simple-form-ui form #confirmation #confirmationQuestion textarea.error{
+	textarea.error{
 		border-color: #ff6666;
 	}
 	.dashboard .info-body li div {
@@ -305,10 +224,175 @@
 		text-transform: capitalize;
 	}
 	#estimatedAge {
+		color: #363463;
 		padding-left: 20%;
 	}
 	#estimatedAge span{
 		color: #f26522;
+	}
+	aside {
+		box-sizing: border-box;
+		display: inline-block;
+		margin: 0;
+		padding: 0 10px 0 2px;
+		vertical-align: top;
+		width: 240px;
+	}
+	aside h3 {
+	  border-bottom: 1px solid;
+	  padding-bottom: 5px;
+	}
+	aside ul {
+	  border: 1px solid #DDD;
+	  background: #FFF;
+	  border-bottom: none;
+	}
+	aside ul li {
+	  border-bottom: 1px solid #DDD;
+	}
+	aside ul li:last-child{
+		height: 100px;
+	}
+	aside ul li a {
+	  display: block;
+	  padding: 7px;
+	}
+	aside ul li a:hover {
+	  background: #007fff;
+	  color: white;
+	  text-decoration: none;
+	}
+	aside ul li.active {
+	  background: #007fff;
+	}
+	aside ul li.active a {
+	  color: white;
+	}
+	.content {
+		box-sizing: border-box;
+		display: inline-block;
+		float: right;
+		padding: 7px;
+		vertical-align: top;
+		width: 760px;
+	}
+	.content article {
+	  border-bottom: 1px dotted #DDD;
+	  padding-bottom: 20px;
+	  margin-bottom: 20px;
+	}
+	.content article h1 {
+	  margin: 40px 0 20px 0;
+	}
+	.content article section p {
+	  margin-bottom: 10px;
+	}
+	.content article section p.caution {
+	  color: red;
+	  padding: 5px;
+	}
+	.content article section code {
+	  display: block;
+	  position: relative;
+	  margin: 35px 0 0 0;
+	  padding: 10px;
+	  background-color: #fff;
+	  border: 1px solid #ddd;
+	  -webkit-border-radius: 2px;
+	  -moz-border-radius: 2px;
+	  border-radius: 2px;
+	}
+	.content article section code:after {
+	  content: "Example";
+	  position: absolute;
+	  top: -27px;
+	  left: -1px;
+	  padding: 3px 7px;
+	  font-size: 14px;
+	  font-weight: bold;
+	  border: 1px solid #ddd;
+	  color: #969696;
+	  background: #F9F9F9;
+	}
+	.content article section .example ul.grid > li {
+	  display: inline-block;
+	  vertical-align: top;
+	  text-align: center;
+	  width: 200px;
+	  margin: 10px;
+	}
+	.content article section code {
+	  background: #F9F9F9;
+	  padding: 0;
+	}
+	.content article section code ol {
+	  margin: 0 0 0 50px;
+	  display: block;
+	  background: #FFF;
+	}
+	.content article section code ol li {
+	  padding: 2px 10px;
+	  color: #f9f9f9;
+	  line-height: 20px;
+	}
+	.content article section code ol li:first-child{
+		padding-top: 10px;	
+	}
+	.content article section code ol li:last-child{
+		padding: 10px 2px 30px 141px
+	}
+	.content article section code ol li label{
+		color: #363463
+	}
+	.content article section code ol li span {
+	  color: #363463;
+	}
+	.content article section code ol li span.mandatory{
+		color: #f00;
+		float: right;
+		padding-right: 5px;
+	}
+	.content article section code ol li span.var, 
+	.content article section code ol li span.tag {
+	  color: teal;
+	}
+	.content article section code ol li span.val {
+	  color: #D14;
+	}
+	.content article section code ol li span.comm {
+	  color: #888;
+	}
+	.content article section code:after {
+	  font-family: "OpenSans";
+	  content: "Patient Details";
+	}
+	.content article section#colors-example ul li {
+	  display: inline-block;
+	  margin-right: 20px;
+	}
+	.content article section#colors-example ul li span {
+	  width: 100px;
+	  height: 100px;
+	  border-radius: 50%;
+	  background: white;
+	  display: block;
+	  float: left;
+	}
+	.content article section#colors-example ul li p {
+	  clear: both;
+	  text-align: center;
+	  padding: 5px;
+	  font-size: 12px;
+	  color: #999;
+	}
+	code, kbd, pre, samp {
+		font-family: "OpenSans",Arial,sans-serif;
+		font-size: 1em;
+	}
+	a.button.confirm,
+	a.button.task,
+	a.button.cancel{
+		line-height: 1.5em;
 	}
 </style>
 
@@ -340,168 +424,87 @@
 		<br/>
 	</div>
 
-	<div class="identifiers">
-		<em>&nbsp; eTB BMU No.:</em>
-		<span>*{TBBMBUNO}</span>
-	</div>
+	
 </div>
 
-<form method="post" class="simple-form-ui" id="registration-form">
-	<section>
-		<span class="title">Registration Details</span>
+<form method="post" id="registration-form">
+	<section >
+		<aside id="menu-container" style="position: relative; top: 0px;">
+			<section id="menu">
+				<h3>Variables</h3>
+				
+				<ul id="menu-list" class="nav">
+                    <li class="">
+                        <a href="#demographics">Demographics</a>
+                    </li>
+                    <li class="">
+                        <a href="#contacts">Contacts</a>
+                    </li>
+					
+                    <li class="">
+                        
+                    </li>
+                </ul>			
+			</section>
+		</aside>
 		
-		<fieldset class="no-confirmation mother-details">
-			<legend>Demographics</legend>
-			<field>
-				<label for="identifierValue">TB Number:<span class="mandatory">*</span></label>
-				<input id="identifierValue" name="identifierValue" type="text" class="required"/>
-			</field>
-			
-			<field>
-				<label for="names">Full Names:<span class="mandatory">*</span></label>
-				<input id="names" name="patient.name" type="text" value="${names?names:''}" class="required"/>
-			</field>
-			
-			<field>
-				<label for="birthdate">Date of Birth:<span class="mandatory">*</span></label>
-				<div class="addon"><i class="icon-calendar small">&nbsp;</i></div>
-				<input type="text" id="birthdate" name="patient.birthdate" value="${birthdate?birthdate:''}" class="required form-textbox1" placeholder="DD/MM/YYYY"/>
-				<input type="hidden" id="birthdateEstimated" name="patient.birthdateEstimated" />
-				<div id="estimatedAge"></div>
-			</field>
-			
-			<field>
-				<label for="gender">Gender:<span class="mandatory">*</span></label>
-				<select id="gender" name="patient.gender" class="required">
-					<option value=""></option>
-					<option value="M">Male</option>
-					<option value="F">Female</option>
-				</select>
-			</field>			
-			
-			<div class="onerow" style="margin-top:50px">
-				<a class="button confirm" onclick="goto_next(1)" style="float:right; display:inline-block; margin-right: 2px">
-					<span>NEXT</span>
-				</a>
-			</div>
-		</fieldset>
-		
-		<fieldset class="no-confirmation mother-details">
-			<legend>Contact Information</legend>
-			<field>
-				<label for="address1">Address:<span class="mandatory">*</span></label>
-				<textarea id="address1" name="address.address1" type="text" class="required"></textarea>
-			</field>
-			
-			<field>
-				<label for="cityVillage">City/Village:<span class="mandatory">*</span></label>
-				<input id="cityVillage" name="address.cityVillage" type="text" class="required"/>
-			</field>
-			
-			<field>
-				<label for="stateProvince">State/Province:</label>
-				<input id="stateProvince" name="address.stateProvince" type="text" class=""/>
-			</field>
-			
-			<field>
-				<label for="country">Country:</label>
-				<input id="country" name="address.country" type="text" class=""/>
-			</field>
-			
-			<field>
-				<label for="patientPhoneNumber">Phone Number:</label>
-				<input id="patientPhoneNumber" name="person.attribute.8" type="text" class=""/>
-			</field>
+		<div class="content" style="margin-left: 0px;">
+			<section>
+				<article id="demographics">
+					<section>
+						<code>
+							<ol>
+								<li>
+									<label for="identifierValue">TB Number:<span class="mandatory">*</span></label>
+									<input id="identifierValue" name="identifierValue" type="text" class="required"/>
+								</li>
+								
+								<li>
+									<label for="names">Full Names:<span class="mandatory">*</span></label>
+									<input id="names" name="patient.name" type="text" value="${names?names:''}" class="required"/>
+								</li>
+								
+								<li>
+									<label for="gender">Gender:<span class="mandatory">*</span></label>
+									<select id="gender" name="patient.gender" class="required">
+										<option value=""></option>
+										<option value="M">Male</option>
+										<option value="F">Female</option>
+									</select>
+								</li>
+								
+								<li>
+									<label for="birthdate">Date of Birth:<span class="mandatory">*</span></label>
+									<div class="addon"><i class="icon-calendar small">&nbsp;</i></div>
+									<input type="text" id="birthdate" name="patient.birthdate" value="${birthdate?birthdate:''}" class="required form-textbox1" placeholder="DD/MM/YYYY"/>
+									<input type="hidden" id="birthdateEstimated" name="patient.birthdateEstimated" />
+									<div id="estimatedAge"></div>
+								</li>
+								
+								<li>
+									<label for="address1">Address:</label>
+									<textarea id="address1" name="address.address1" type="text" class="required"></textarea>									
+								</li>
+								
+								<li>
+									<a class="button confirm" onclick="Page.submit();" style="float:right; display:inline-block;">
+										<i class="icon-save"></i>
+										FINISH
+									</a>
 
-			<field>
-				<label for="identifierValue">Physical Address:</label>
-				<textarea id="address2" name="address.address2" type="text" class=""></textarea>
-			</field>
-			
-			<div class="onerow" style="margin-top: 50px">
-				<a class="button task" onclick="goto_previous(1);" style="margin-left: 19.5%;">
-					<span>PREVIOUS</span>
-				</a>
-
-				<a class="button confirm" onclick="goto_next(2);" style="float:right; display:inline-block; margin-right: 2px">
-					<span>NEXT</span>
-				</a>
-			</div>
-		</fieldset>		
-	</section>
+									<a class="button cancel" onclick="window.location.href = window.location.href" style="display:inline-block;"/>
+										<i class="icon-remove"></i>
+										RESET
+									</a>
+									<div class="clear"></div>
+								</li>
+							</ol>
+						</code><br>
+					</section>
+				</article>
+			</section>
+		</div>
 	
-	<div id="confirmation" class="confirmation" style="width:74%; padding-top: 0px;">
-		<span id="confirmation_label" class="title">Confirmation</span>
-		
-		<div id="confirmationQuestion" style="display:none">
-			<field style="display: none;">
-				<input id="lastItem" type="text"/>
-			</field>
-		</div>
-		
-
-		<div class="dashboard onerow">
-			<div class="info-section">
-				<div class="info-header">
-					<i class="icon-diagnosis"></i>
-
-					<h3>Patient Summary</h3>
-				</div>
-
-				<div class="info-body">
-					<ul>
-						<li>
-							<span class="status active"></span>
-							<div>TBMBU No.:</div>
-							<small id="summ_idnt">*{TBBMNUNO}</small>
-						</li>
-						
-						<li>
-							<span class="status active"></span>
-							<div>Names:</div>
-							<small id="summ_name">N/A</small>
-						</li>
-						
-						<li>
-							<span class="status active"></span>
-							<div>Gender:</div>
-							<small id="summ_gend">N/A</small>
-						</li>
-						
-						<li>
-							<span class="status active"></span>
-							<div>Age:</div>
-							<small id="summ_ages">N/A</small>
-						</li>
-						
-						<li>
-							<span class="status active"></span>
-							<div>Address:</div>
-							<small id="summ_adds">N/A</small>
-						</li>
-						
-						<li>
-							<span class="status active"></span>
-							<div>City/Village:</div>
-							<small id="summ_city">N/A</small>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</div>
-
-		<div class="onerow" style="margin-top: 150px">
-			<a class="button task ui-tabs-anchor" onclick="goto_previous(2);">
-				<span style="padding: 15px;">PREVIOUS</span>
-			</a>
-
-			<a class="button confirm" onclick="PAGE.submit();" style="float:right; display:inline-block; margin-left: 5px;">
-				<span>FINISH</span>
-			</a>
-
-			<a class="button cancel" onclick="window.location.href = window.location.href" style="float:right; display:inline-block;"/>
-				<span>RESET</span>
-			</a>
-		</div>
-	</div>
+		<div class="clear"></div>	
+	</section>
 </form>
