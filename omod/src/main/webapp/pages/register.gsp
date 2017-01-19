@@ -42,10 +42,6 @@
 		Page = {
 			/** SUBMIT */
 			submit: function () {
-				if (jq('#identifierValue').val() == ''){
-					jq().toastmessage('showErrorToast', 'Kindly provide patient TB Identifier');
-					return false;
-				}
 				if (jq('#names').val().split(' ').length == 1){
 					jq().toastmessage('showErrorToast', 'Kindly provide atleast two names');
 					return false;
@@ -454,11 +450,6 @@
 					<section>
 						<code>
 							<ol>
-								<li>
-									<label for="identifierValue">TB Number:<span class="mandatory">*</span></label>
-									<input id="identifierValue" name="identifierValue" type="text" class="required"/>
-								</li>
-								
 								<li>
 									<label for="names">Full Names:<span class="mandatory">*</span></label>
 									<input id="names" name="patient.name" type="text" value="${names?names:''}" class="required"/>

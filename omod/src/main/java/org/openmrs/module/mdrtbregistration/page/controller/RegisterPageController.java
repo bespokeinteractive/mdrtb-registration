@@ -52,6 +52,11 @@ public class RegisterPageController {
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         Date birthDate = df.parse(request.getParameter("patient.birthdate"), new ParsePosition(0));
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyMMddHHmmssS");
+        Calendar calendar = Calendar.getInstance();
+        Random random = new Random();
+
+        String identifier =  sdf.format(calendar.getInstance().getTime()) + random.nextInt(9999);
         String givenName = "";
         String familyName = "";
         String otherNames = "";
@@ -76,7 +81,7 @@ public class RegisterPageController {
         pn.setMiddleName(otherNames);
 
         PatientIdentifier pi = new PatientIdentifier();
-        pi.setIdentifier(request.getParameter("identifierValue"));
+        pi.setIdentifier(identifier);
         pi.setIdentifierType(new PatientIdentifierType(2));
         pi.setLocation(new Location(2));
         pi.setDateCreated(new Date());
