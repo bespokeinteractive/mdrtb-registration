@@ -226,43 +226,16 @@
 	#estimatedAge span{
 		color: #f26522;
 	}
-	aside {
+	.aside {
 		box-sizing: border-box;
 		display: inline-block;
 		margin: 0;
-		padding: 0 10px 0 2px;
+		padding: 15px 0 0;
 		vertical-align: top;
-		width: 240px;
-	}
-	aside h3 {
-	  border-bottom: 1px solid;
-	  padding-bottom: 5px;
-	}
-	aside ul {
-	  border: 1px solid #DDD;
-	  background: #FFF;
-	  border-bottom: none;
-	}
-	aside ul li {
-	  border-bottom: 1px solid #DDD;
-	}
-	aside ul li:last-child{
-		height: 100px;
-	}
-	aside ul li a {
-	  display: block;
-	  padding: 7px;
-	}
-	aside ul li a:hover {
-	  background: #007fff;
-	  color: white;
-	  text-decoration: none;
-	}
-	aside ul li.active {
-	  background: #007fff;
-	}
-	aside ul li.active a {
-	  color: white;
+		width: 215px;
+	}	
+	#left-menu {
+		border-left: 1px solid #ccc;
 	}
 	.content {
 		box-sizing: border-box;
@@ -270,12 +243,12 @@
 		float: right;
 		padding: 7px;
 		vertical-align: top;
-		width: 760px;
+		width: 780px;
 	}
 	.content article {
-	  border-bottom: 1px dotted #DDD;
-	  padding-bottom: 20px;
-	  margin-bottom: 20px;
+	  border-bottom: 1px none #DDD;
+	  padding-bottom: 0px;
+	  margin-bottom: 0px;
 	}
 	.content article h1 {
 	  margin: 40px 0 20px 0;
@@ -390,6 +363,15 @@
 	a.button.cancel{
 		line-height: 1.5em;
 	}
+	ul.left-menu li .menu-date {
+		font-size: 1em;
+	}
+	ul.left-menu li .menu-title {
+		font-size: 0.75em;
+	}
+	ul.left-menu li:last-of-type {
+		height: 150px;
+	}
 </style>
 
 <div class="clear"></div>
@@ -425,24 +407,26 @@
 
 <form method="post" id="registration-form">
 	<section >
-		<aside id="menu-container" style="position: relative; top: 0px;">
-			<section id="menu">
-				<h3>Variables</h3>
-				
-				<ul id="menu-list" class="nav">
-                    <li class="">
-                        <a href="#demographics">Demographics</a>
-                    </li>
-                    <li class="">
-                        <a href="#contacts">Contacts</a>
-                    </li>
-					
-                    <li class="">
-                        
-                    </li>
-                </ul>			
-			</section>
-		</aside>
+		<div class="aside">
+			<ul id="left-menu" class="left-menu">
+				<li class="menu-item selected" visitid="54">
+					<span class="menu-date">
+						<i class="icon-user"></i>
+						Patient Details
+					</span>
+					<span class="menu-title">
+						<i class="icon-globe"></i>
+						Demographic Information
+					</span>
+					<span class="arrow-border"></span>
+					<span class="arrow"></span>
+				</li>
+			
+				<li class="menu-item">
+					&nbsp;
+				</li>
+			</ul>
+		</div>
 		
 		<div class="content" style="margin-left: 0px;">
 			<section>
