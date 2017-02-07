@@ -2,10 +2,130 @@
     ui.decorateWith("appui", "standardEmrPage", [title: "Search Patients"])
 	
 	ui.includeCss("mdrtbregistration", "onepcssgrid.css")
+	ui.includeCss("uicommons", "datatables/dataTables_jui.css")
+	
+    ui.includeJavascript("mdrtbregistration", "jq.dataTables.min.js")
 %>
 
 <script>
+	var searchTable;
+	var searchTableObject;
+	var searchResultsData = [];
+	var searchHighlightedKeyboardRowIndex;
+	
+	var getMdrtbpatients = function(){
+		searchTableObject.find('td.dataTables_empty').html('<span><img class="search-spinner" src="'+emr.resourceLink('uicommons', 'images/spinner.gif')+'" /></span>');
+		var requestData = {
+			phrase: 		jq('#searchPhrase').val(),
+			gender: 		jq('#gender').val(),
+			age: 			jq('#age').val(),
+			ageRange: 		jq('#ageRange').val(),
+			lastDayOfVisit:	jq('#lastDayOfVisit-field').val(),
+			lastVisit: 		jq('#lastVisit').val()
+		}
+		
+		jq.getJSON(emr.fragmentActionLink("mdrtbregistration", "search", "searchPatient"), requestData)
+			.success(function (data) {
+				updateSearchResults(data);
+			}).error(function (xhr, status, err) {
+				updateSearchResults([]);
+			}
+		);
+	};
+	
+	var updateSearchResults = function(results){
+		searchResultsData = results || [];
+		var dataRows = [];
+		_.each(searchResultsData, function(result){
+			var names = '<a href="../mdrtbdashboard/main.page?patient=' + result.patientProgram.patient.patientId + '">' + result.wrapperNames + '</a>';
+			var remarks = 'N/A';
+			var icons = '<a href="../mdrtbdashboard/main.page?patient=' + result.patientProgram.patient.patientId + '"><i class="icon-edit small"></i></a> <a href="editPatient.page?patient=' + result.patientProgram.patient.patientId + '"><i class="icon-group small"></i></a> <a href="../mdrtbdashboard/main.page?patient=' + result.patientProgram.patient.patientId + '&tabs=chart"><i class="icon-bar-chart small"></i></a>';
+			var gender = 'Male';
+			
+			if (result.patientProgram.patient.gender == 'F'){
+				gender = 'Female';
+			}
+			
+			
+			
+			dataRows.push([0, result.wrapperIdentifier, names, result.patientProgram.patient.age, gender, result.wrapperStatus, icons]);
+		});
+
+		searchTable.api().clear();
+		
+		if(dataRows.length > 0) {
+			searchTable.fnAddData(dataRows);
+		}
+
+		refreshInTable(searchResultsData, searchTable);
+	};
+	
+	var refreshInTable = function (resultData, dTable) {
+        var rowCount = resultData.length;
+        if (rowCount == 0) {
+            dTable.find('td.dataTables_empty').html("No Records Found");
+        }
+        dTable.fnPageChange(0);
+    };
+
+    var isTableEmpty = function (resultData, dTable) {
+        if (resultData.length > 0) {
+            return false
+        }
+        return !dTable || dTable.fnGetNodes().length == 0;
+    };	
+	
 	jq(function () {
+		searchTableObject = jq("#searchList");
+		
+		searchTable = searchTableObject.dataTable({
+			bFilter: true,
+			bJQueryUI: true,
+			bLengthChange: false,
+			iDisplayLength: 25,
+			sPaginationType: "full_numbers",
+			bSort: false,
+			sDom: 't<"fg-toolbar ui-toolbar ui-corner-bl ui-corner-br ui-helper-clearfix datatables-info-and-pg"ip>',
+			oLanguage: {
+				"sInfo": "_TOTAL_ Patient(s) Found",
+				"sInfoEmpty": " ",
+				"sZeroRecords": "No Patients Found",
+				"sInfoFiltered": "(Showing _TOTAL_ of _MAX_ Patients)",
+				"oPaginate": {
+					"sFirst": "First",
+					"sPrevious": "Previous",
+					"sNext": "Next",
+					"sLast": "Last"
+				}
+			},
+
+			fnDrawCallback : function(oSettings){
+				if(isTableEmpty(searchResultsData, searchTable)){
+					//this should ensure that nothing happens when the use clicks the
+					//row that contain the text that says 'No data available in table'
+					return;
+				}
+
+				if(searchHighlightedKeyboardRowIndex != undefined && !isHighlightedRowOnVisiblePage()){
+					unHighlightRow(searchTable.fnGetNodes(searchHighlightedKeyboardRowIndex));
+				}
+			},
+			
+			fnRowCallback : function (nRow, aData, index){
+				return nRow;
+			}
+		});
+		
+		searchTable.on( 'order.dt search.dt', function () {
+			searchTable.api().column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+				cell.innerHTML = i+1;
+			} );
+		}).api().draw();
+		
+		//End of DataTables
+	
+	
+	
 		jq('#as_close').click(function(){
 			jq('#dashboard').hide(100);
 			jq('#patient-search-form').clearForm();
@@ -15,6 +135,32 @@
 			jq('#dashboard').toggle(300);
 			jq('#patient-search-form').clearForm();
 		});
+		
+		jq('#searchPhrase').on('keyup', function(){
+			getMdrtbpatients();
+		});
+		
+		jq('input, select').keydown(function (e) {
+			var key = e.keyCode || e.which;
+			if (key == 9 || key == 13) {
+				getMdrtbpatients(); 
+			}
+		});
+		
+		jq('input, select').on('blur', function(){
+			if (jq(this).attr('id') !== 'searchPhrase'){
+				getMdrtbpatients();
+			}
+		});
+		
+		jq('#lastDayOfVisit-display').change(function(){
+			getMdrtbpatients();
+		});
+		
+		
+		if ('${phrase}' !== ''){
+			getMdrtbpatients();
+		}		
 	});
 	
 	jq.fn.clearForm = function() {
@@ -155,6 +301,9 @@
 		padding: 1px 2px;
 		vertical-align: text-bottom;
 	}
+	table th, table td {
+		white-space: nowrap;
+	}
 </style>
 
 <div class="clear"></div>
@@ -186,11 +335,11 @@
             <br/><br/>
 			
 			<form onsubmit="return false" id="patient-search-form" method="get" style="margin: 0px;">
-				<input type="text" autocomplete="off" placeholder="Search by ID or Name" id="searchPhrase"
-					   style="float:left; width:70%; padding:6px 10px 7px;" onkeyup="ADVSEARCH.startSearch(event);">
+				<input type="text" autocomplete="off" placeholder="Search by TBMU No or Name" id="searchPhrase"
+					   style="float:left; width:70%; padding:6px 10px 7px;" value="${phrase?phrase:''}">
 				<img id="ajaxLoader" style="display:none; float:left; margin: 3px -4%;" src="${ui.resourceLink("registration", "images/ajax-loader.gif")}"/>
 
-				<div id="advanced" class="advanced" onclick="ShowDashboard();"><i class="icon-filter"></i>ADVANCED SEARCH</div>
+				<div id="advanced" class="advanced"><i class="icon-filter"></i>ADVANCED SEARCH</div>
 
 				<div id="dashboard" class="dashboard" style="display:none;">
 					<div class="info-section">
@@ -198,32 +347,23 @@
 							<i class="icon-diagnosis"></i>
 
 							<h3>ADVANCED SEARCH</h3>
-							<span id="as_close" onclick="HideDashboard();">
+							<span id="as_close">
 								<div class="identifiers">
 									<span style="background:#00463f; padding-bottom: 5px;">x</span>
 								</div>
 							</span>
 						</div>
 
-						<div class="info-body" style="min-height: 100px;">
+						<div class="info-body" style="min-height: 75px;">
 							<ul>
 								<li>
 									<div class="onerow" style="padding-top: 0px;">
 										<div class="col4">
 											<label for="age">Age</label>
 											<input id="age" name="age" style="width: 172px; height: 34px;" placeholder="Patient Age">
-										</div>
-										
-										<div class="col4">
-											<label for="gender">Gender</label>
-											<select style="width: 172px" id="gender" name="gender">
-												<option value="">Any</option>
-												<option value="M">Male</option>
-												<option value="F">Female</option>
-											</select>
-										</div>
+										</div>										
 
-										<div class="col4 last">
+										<div class="col4">
 											<label for="gender">Previous Visit</label>
 											<select style="width: 172px" id="lastVisit">
 												<option value="">Anytime</option>
@@ -233,6 +373,14 @@
 											</select>
 										</div>
 
+										<div class="col4 last">
+											<label for="gender">Gender</label>
+											<select style="width: 172px" id="gender" name="gender">
+												<option value="">Any</option>
+												<option value="M">Male</option>
+												<option value="F">Female</option>
+											</select>
+										</div>
 										
 									</div>
 
@@ -250,25 +398,12 @@
 										</div>
 
 										<div class="col4">
-											<label for="phoneNumber">Phone No.</label>
-											<input id="phoneNumber" name="phoneNumber" style="width: 172px; height: 34px;" placeholder="Phone No.">
-										</div>
-
-										<div class="col4 last">
 											<label for="lastDayOfVisit">Last Visit</label>
 											${ui.includeFragment("uicommons", "field/datetimepicker", [formFieldName: 'lastDayOfVisit', id: 'lastDayOfVisit', label: '', useTime: false, defaultToday: false, class: ['newdtp'], endDate: new Date()])}
 										</div>
-									</div>
-									
-									<div class="onerow">
+
 										<div class="col4 last">
-											<label for="fileNumber">File Number</label>
-											<input id="fileNumber" name="fileNumber" style="width: 172px; height: 34px;" placeholder="File Number">
 										</div>
-
-										
-
-										
 									</div>
 								</li>
 							</ul>
@@ -277,46 +412,22 @@
 					</div>
 				</div>
 			</form>
-
-			<div id="patient-search-results" style="display: block; margin-top:3px;">
-				<div role="grid" class="dataTables_wrapper" id="patient-search-results-table_wrapper">
-					<table id="patient-search-results-table" class="dataTable" aria-describedby="patient-search-results-table_info">
-						<thead>
-						<tr role="row">
-							<th class="ui-state-default" role="columnheader" style="width: 220px;">
-								<div class="DataTables_sort_wrapper">Identifier<span class="DataTables_sort_icon"></span></div>
-							</th>
-
-							<th class="ui-state-default" role="columnheader">
-								<div class="DataTables_sort_wrapper">Name<span class="DataTables_sort_icon"></span></div>
-							</th>
-
-							<th class="ui-state-default" role="columnheader" style="width: 60px;">
-								<div class="DataTables_sort_wrapper">Age<span class="DataTables_sort_icon"></span></div>
-							</th>
-
-							<th class="ui-state-default" role="columnheader" style="width: 60px;">
-								<div class="DataTables_sort_wrapper">Gender<span class="DataTables_sort_icon"></span></div>
-							</th>
-
-							<th class="ui-state-default" role="columnheader" style="width:120px;">
-								<div class="DataTables_sort_wrapper">Last Visit<span class="DataTables_sort_icon"></span></div>
-							</th>
-
-							<th class="ui-state-default" role="columnheader" style="width: 100px;">
-								<div class="DataTables_sort_wrapper">Action<span class="DataTables_sort_icon"></span></div>
-							</th>
-						</tr>
-						</thead>
-
-						<tbody role="alert" aria-live="polite" aria-relevant="all">
-							<tr align="center">
-								<td colspan="6">No patients found</td>
-							</tr>
-						</tbody>
-					</table>
-
-				</div>
+			
+			<div id="receipts" style="display: block; margin-top:3px;">
+				<table id="searchList">
+					<thead>
+						<th>#</th>
+						<th>IDENTIFIER</th>
+						<th>NAMES</th>
+						<th>AGE</th>
+						<th>GENDER</th>
+						<th>STATUS</th>
+						<th>ACTIONS</th>
+					</thead>
+					
+					<tbody>			
+					</tbody>
+				</table>
 			</div>
 			
 			

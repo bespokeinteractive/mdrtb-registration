@@ -29,6 +29,14 @@
 			<groupId>org.openmrs.module</groupId>
 			<artifactId>uiframework-api</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>mdrtb-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>mdrtbdashboard-api</artifactId>
+		</dependency>
 		<!-- End OpenMRS modules -->
 
 		<!-- Begin OpenMRS core -->
