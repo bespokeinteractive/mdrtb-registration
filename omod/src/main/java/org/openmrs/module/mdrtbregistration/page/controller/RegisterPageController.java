@@ -51,6 +51,7 @@ public class RegisterPageController {
 
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         Date birthDate = df.parse(request.getParameter("patient.birthdate"), new ParsePosition(0));
+        Boolean estimated = Boolean.parseBoolean(request.getParameter("patient.birthdateEstimated"));
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyMMddHHmmssS");
         Calendar calendar = Calendar.getInstance();
@@ -92,10 +93,7 @@ public class RegisterPageController {
         pa.setCountry(request.getParameter("address.country"));
         pa.setCityVillage(request.getParameter("address.cityVillage"));
         pa.setStateProvince(request.getParameter("address.stateProvince"));
-
-        PersonAttribute pat = new PersonAttribute();
-        pat.setAttributeType(new PersonAttributeType(8));
-        pat.setValue(request.getParameter("person.attribute.8"));
+        pa.setPreferred(true);
 
         Patient patient = new Patient();
         patient.addName(pn);
@@ -103,7 +101,7 @@ public class RegisterPageController {
         patient.addIdentifier(pi);
         patient.setGender(request.getParameter("patient.gender"));
         patient.setBirthdate(birthDate);
-        patient.addAttribute(pat);
+        patient.setBirthdateEstimated(estimated);
 
         patient = Context.getPatientService().savePatient(patient);
         params.put("patient", patient);

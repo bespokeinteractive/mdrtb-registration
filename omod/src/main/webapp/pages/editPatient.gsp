@@ -116,7 +116,7 @@
 					}),
 					success: function (data) {
 						if (data.datemodel.error == undefined) {
-							if ('${estimate}' == 'true') {
+							if ('${patient.birthdateEstimated}' == 'true') {
 								jq("#estimatedAge").html(data.datemodel.age + '<span> (Estimated)</span>');
 								jq("#birthdateEstimated").val("true")
 							} else {
@@ -144,7 +144,7 @@
 		};
 		//Nothing
 		
-		jq('#gender').val('${gender}');		
+		jq('#gender').val('${patient.gender}');		
 		Page.validateBirthDate();
     });
 </script>
@@ -393,7 +393,7 @@
 		
 		<li>
 			<i class="icon-chevron-right link"></i>
-			<a href="#">New Patient</a>
+			<a href="#">Edit Patient</a>
 		</li>
 	</ul>
 </div>
@@ -401,7 +401,7 @@
 <div class="patient-header new-patient-header new-patient-icon">
 	<div class="demographics">
 		<h1 class="name" style="border-bottom: 1px solid #ddd;">
-			<span>NEW PATIENT REGISTRATION &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+			<span>EDIT PATIENT DETAILS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
 		</h1>
 		<br/>
 	</div>
@@ -440,7 +440,8 @@
 							<ol>
 								<li>
 									<label for="names">Full Names:<span class="mandatory">*</span></label>
-									<input id="names" name="patient.name" type="text" value="${names?names:''}" class="required"/>
+									<input id="names" name="patient.name" type="text" value="${patient.givenName} ${patient.familyName}${patient.middleName?' '+patient.middleName:''}" class="required"/>
+									<input id="idnts" name="patient.id" type="hidden" value="${patient.id}" />
 								</li>
 								
 								<li>
@@ -455,14 +456,14 @@
 								<li>
 									<label for="birthdate">Date of Birth:<span class="mandatory">*</span></label>
 									<div class="addon"><i class="icon-calendar small">&nbsp;</i></div>
-									<input type="text" id="birthdate" name="patient.birthdate" value="${birthdate?birthdate:''}" class="required form-textbox1" placeholder="DD/MM/YYYY"/>
-									<input type="hidden" id="birthdateEstimated" name="patient.birthdateEstimated" />
+									<input type="text" id="birthdate" name="patient.birthdate" value="${birthdate}" class="required form-textbox1" placeholder="DD/MM/YYYY"/>
+									<input type="hidden" id="birthdateEstimated" name="patient.birthdateEstimated" value="${patient.birthdateEstimated}" />
 									<div id="estimatedAge"></div>
 								</li>
 								
 								<li>
 									<label for="address1">Address:<span class="mandatory">*</span></label>
-									<textarea id="address1" name="address.address1" type="text" class="required"></textarea>									
+									<textarea id="address1" name="address.address1" type="text" class="required">${patient.getPersonAddress()?patient.getPersonAddress().address1:''}</textarea>									
 								</li>
 								
 								<li>
