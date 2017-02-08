@@ -54,7 +54,7 @@
 					jq().toastmessage('showErrorToast', 'Kindly specify the patient birthdate');
 					return false;
 				}
-				if (jq('#address').val() == ''){
+				if (jq('#address1').val() == ''){
 					jq().toastmessage('showErrorToast', 'Kindly specify the patient Address/Village');
 					return false;
 				}
