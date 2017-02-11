@@ -6,7 +6,7 @@
 	<artifactId>mdrtbregistration</artifactId>
 	<version>1.0</version>
 	<packaging>pom</packaging>
-	<name>MDRTB Registration Module</name>
+	<name>MDRTB Registration</name>
 	<description>OpenMRS module to Register TB Patients</description>
 
 	<developers>

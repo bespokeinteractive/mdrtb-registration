@@ -1,5 +1,5 @@
 <%
-    ui.decorateWith("appui", "standardEmrPage", [title: "Search Patients"])
+    ui.decorateWith("appui", "standardEmrPage", [title: "Active Patients"])
 	
 	ui.includeCss("mdrtbregistration", "onepcssgrid.css")
 	ui.includeCss("uicommons", "datatables/dataTables_jui.css")
@@ -16,13 +16,13 @@
 	var getMdrtbpatients = function(){
 		searchTableObject.find('td.dataTables_empty').html('<span><img class="search-spinner" src="'+emr.resourceLink('uicommons', 'images/spinner.gif')+'" /></span>');
 		var requestData = {
-			phrase: 		jq('#searchPhrase').val(),
-			gender: 		jq('#gender').val(),
-			age: 			jq('#age').val(),
-			ageRange: 		jq('#ageRange').val(),
-			lastDayOfVisit:	jq('#lastDayOfVisit-field').val(),
-			lastVisit: 		jq('#lastVisit').val(),
-            programId:      0
+			phrase: 		'',
+			gender: 		'',
+			age: 			'',
+			ageRange: 		0,
+			lastDayOfVisit:	'',
+			lastVisit: 		0,
+			programId:		${program}
 		}
 		
 		jq.getJSON(emr.fragmentActionLink("mdrtbregistration", "search", "searchPatient"), requestData)
@@ -46,8 +46,6 @@
 			if (result.patientProgram.patient.gender == 'F'){
 				gender = 'Female';
 			}
-			
-			
 			
 			dataRows.push([0, result.wrapperIdentifier, names, result.patientProgram.patient.age, gender, result.wrapperStatus, icons]);
 		});
@@ -88,10 +86,10 @@
 			bSort: false,
 			sDom: 't<"fg-toolbar ui-toolbar ui-corner-bl ui-corner-br ui-helper-clearfix datatables-info-and-pg"ip>',
 			oLanguage: {
-				"sInfo": "_TOTAL_ Patient(s) Found",
+				"sInfo": "_TOTAL_ ${program==2?'MDR-':''}TB Patient(s) Found",
 				"sInfoEmpty": " ",
-				"sZeroRecords": "No Patients Found",
-				"sInfoFiltered": "(Showing _TOTAL_ of _MAX_ Patients)",
+				"sZeroRecords": "No ${program==2?'MDR-':''}TB Patients Found",
+				"sInfoFiltered": "Showing _TOTAL_ of _MAX_ ${program==2?'MDR-':''}TB Patients",
 				"oPaginate": {
 					"sFirst": "First",
 					"sPrevious": "Previous",
@@ -124,59 +122,13 @@
 		}).api().draw();
 		
 		//End of DataTables
-	
-	
-	
-		jq('#as_close').click(function(){
-			jq('#dashboard').hide(100);
-			jq('#patient-search-form').clearForm();
-		});
-		
-		jq('#advanced').click(function(){
-			jq('#dashboard').toggle(300);
-			jq('#patient-search-form').clearForm();
-		});
 		
 		jq('#searchPhrase').on('keyup', function(){
-			getMdrtbpatients();
+			searchTable.api().search(this.value).draw();
 		});
 		
-		jq('input, select').keydown(function (e) {
-			var key = e.keyCode || e.which;
-			if (key == 9 || key == 13) {
-				getMdrtbpatients(); 
-			}
-		});
-		
-		jq('input, select').on('blur', function(){
-			if (jq(this).attr('id') !== 'searchPhrase'){
-				getMdrtbpatients();
-			}
-		});
-		
-		jq('#lastDayOfVisit-display').change(function(){
-			getMdrtbpatients();
-		});
-		
-		
-		if ('${phrase}' !== ''){
-			getMdrtbpatients();
-		}		
+		getMdrtbpatients();
 	});
-	
-	jq.fn.clearForm = function() {
-		return this.each(function() {
-			var type = this.type, tag = this.tagName.toLowerCase();
-			if (tag == 'form')
-			  return jQuery(':input',this).clearForm();
-			if ((type == 'text' || type == 'hidden') && jQuery(this).attr('id') != 'searchPhrase')
-			  this.value = '';
-			else if (type == 'checkbox' || type == 'radio')
-			  this.checked = false;
-			else if (tag == 'select')
-			  this.selectedIndex = -1;
-		});
-	};
 </script>
 
 <style>
@@ -313,13 +265,15 @@
         <ul id="breadcrumbs">
             <li>
                 <a href="${ui.pageLink('referenceapplication','home')}">
-                    <i class="icon-home small"></i></a>
+                <i class="icon-home small"></i></a>
             </li>
             <li>
                 <i class="icon-chevron-right link"></i>
-                <a href="#">Find Patients</a>
+                <a href="search.page">Active</a>
             </li>
             <li>
+				<i class="icon-chevron-right link"></i>
+                <a href="#">${program==2?'MDR-':''}TB Patients</a>
             </li>
         </ul>
     </div>
@@ -327,7 +281,7 @@
     <div class="patient-header new-patient-header">
         <div class="demographics">
             <h1 class="name" style="border-bottom: 1px solid #ddd;">
-                <span>FIND PATIENT RECORDS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <span>ACTIVE ${program==2?'MDR-':''}TB PATIENTS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
             </h1>
             <br/>
         </div>
@@ -336,82 +290,8 @@
             <br/><br/>
 			
 			<form onsubmit="return false" id="patient-search-form" method="get" style="margin: 0px;">
-				<input type="text" autocomplete="off" placeholder="Search by TBMU No or Name" id="searchPhrase"
-					   style="float:left; width:70%; padding:6px 10px 7px;" value="${phrase?phrase:''}">
+				<input type="text" autocomplete="off" placeholder="Filter Patient List" id="searchPhrase" style="float:left; width:100%; padding:6px 10px 7px;">
 				<img id="ajaxLoader" style="display:none; float:left; margin: 3px -4%;" src="${ui.resourceLink("registration", "images/ajax-loader.gif")}"/>
-
-				<div id="advanced" class="advanced"><i class="icon-filter"></i>ADVANCED SEARCH</div>
-
-				<div id="dashboard" class="dashboard" style="display:none;">
-					<div class="info-section">
-						<div class="info-header">
-							<i class="icon-diagnosis"></i>
-
-							<h3>ADVANCED SEARCH</h3>
-							<span id="as_close">
-								<div class="identifiers">
-									<span style="background:#00463f; padding-bottom: 5px;">x</span>
-								</div>
-							</span>
-						</div>
-
-						<div class="info-body" style="min-height: 75px;">
-							<ul>
-								<li>
-									<div class="onerow" style="padding-top: 0px;">
-										<div class="col4">
-											<label for="age">Age</label>
-											<input id="age" name="age" style="width: 172px; height: 34px;" placeholder="Patient Age">
-										</div>										
-
-										<div class="col4">
-											<label for="gender">Previous Visit</label>
-											<select style="width: 172px" id="lastVisit">
-												<option value="">Anytime</option>
-												<option value="31">Last month</option>
-												<option value="183">Last 6 months</option>
-												<option value="366">Last year</option>
-											</select>
-										</div>
-
-										<div class="col4 last">
-											<label for="gender">Gender</label>
-											<select style="width: 172px" id="gender" name="gender">
-												<option value="">Any</option>
-												<option value="M">Male</option>
-												<option value="F">Female</option>
-											</select>
-										</div>
-										
-									</div>
-
-									<div class="onerow" style="padding-top: 0px;">
-										<div class="col4">
-											<label for="ageRange">Range &plusmn;</label>
-											<select id="ageRange" name="ageRange" style="width: 172px">
-												<option value="0">Exact</option>
-												<option value="1">1</option>
-												<option value="2">2</option>
-												<option value="3">3</option>
-												<option value="4">4</option>
-												<option value="5">5</option>
-											</select>
-										</div>
-
-										<div class="col4">
-											<label for="lastDayOfVisit">Last Visit</label>
-											${ui.includeFragment("uicommons", "field/datetimepicker", [formFieldName: 'lastDayOfVisit', id: 'lastDayOfVisit', label: '', useTime: false, defaultToday: false, class: ['newdtp'], endDate: new Date()])}
-										</div>
-
-										<div class="col4 last">
-										</div>
-									</div>
-								</li>
-							</ul>
-							<div class="clear"></div>
-						</div>
-					</div>
-				</div>
 			</form>
 			
 			<div id="receipts" style="display: block; margin-top:3px;">
@@ -430,17 +310,6 @@
 					</tbody>
 				</table>
 			</div>
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
         </div>
     </div>
 </div>

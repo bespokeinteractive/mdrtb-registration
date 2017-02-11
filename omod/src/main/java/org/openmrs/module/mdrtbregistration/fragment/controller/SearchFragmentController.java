@@ -34,8 +34,9 @@ public class SearchFragmentController {
         Integer age = getInt(request.getParameter("age"));
         Integer ageRange = getInt(request.getParameter("ageRange"));
         Integer lastVisitRange = getInt(request.getParameter("lastVisit"));
+        Integer programId = getInt(request.getParameter("programId"));
 
-        List<MdrtbPatientProgram> mdrtbPatients = Context.getService(MdrtbDashboardService.class).getMdrtbPatients(phrase, gender, age, ageRange, lastDayOfVisit, lastVisitRange);
+        List<MdrtbPatientProgram> mdrtbPatients = Context.getService(MdrtbDashboardService.class).getMdrtbPatients(phrase, gender, age, ageRange, lastDayOfVisit, lastVisitRange, programId);
         List<MdrtbPatientWrapper> wrapperList = mdrtbPatientsWithDetails(mdrtbPatients);
 
         return SimpleObject.fromCollection(wrapperList, ui, "patientProgram", "wrapperIdentifier", "wrapperNames", "wrapperStatus", "formartedVisitDate", "patientProgram.patient.patientId", "patientProgram.patient.age", "patientProgram.patient.gender");

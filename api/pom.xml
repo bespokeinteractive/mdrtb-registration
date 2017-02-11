@@ -11,7 +11,7 @@
 	<artifactId>mdrtbregistration-api</artifactId>
 	<version>1.0</version>
 	<packaging>jar</packaging>
-	<name>MDRTB Registration Module</name>
+	<name>MDRTB Registration API</name>
 	<description>OpenMRS module to Register TB Patients</description>
 
 	<dependencies>

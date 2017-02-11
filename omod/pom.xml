@@ -10,7 +10,7 @@
 	<artifactId>mdrtbregistration-omod</artifactId>
 	<version>1.0</version>
 	<packaging>jar</packaging>
-	<name>MDRTB Registration Module</name>
+	<name>MDRTB Registration OMOD</name>
 	<description>OpenMRS module to Register TB Patients</description>
 
 	<dependencies>
