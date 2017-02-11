@@ -257,6 +257,21 @@
 	table th, table td {
 		white-space: nowrap;
 	}
+	i.icon-search{
+		color: #ccc;
+		float: left;
+		margin-left: 7px;
+		margin-top: -35px;
+	}
+	.new-patient-header .demographics {
+		display: inline-block;
+		width: 100%;
+	}
+	a.other-type{
+		float: right;
+		font-size: 0.75em;
+		margin: 20px 3px 0;
+	}
 </style>
 
 <div class="clear"></div>
@@ -283,6 +298,8 @@
             <h1 class="name" style="border-bottom: 1px solid #ddd;">
                 <span>ACTIVE ${program==2?'MDR-':''}TB PATIENTS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
             </h1>
+			
+			<a href="active.page?program=${program==1?2:1}" class="other-type">View ${program==1?'MDR-':''}TB Patients</a>
             <br/>
         </div>
 		
@@ -290,7 +307,8 @@
             <br/><br/>
 			
 			<form onsubmit="return false" id="patient-search-form" method="get" style="margin: 0px;">
-				<input type="text" autocomplete="off" placeholder="Filter Patient List" id="searchPhrase" style="float:left; width:100%; padding:6px 10px 7px;">
+				<input type="text" autocomplete="off" placeholder="Filter Patient List" id="searchPhrase" style="float:left; width:100%; padding:6px 10px 7px 35px;">
+				<i class="icon-search small"></i>
 				<img id="ajaxLoader" style="display:none; float:left; margin: 3px -4%;" src="${ui.resourceLink("registration", "images/ajax-loader.gif")}"/>
 			</form>
 			
