@@ -5,7 +5,8 @@ import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
- * Created by daugm on 2/11/2017.
+ * Created by Dennis Henry
+ * Created on 2/11/2017.
  */
 public class ActivePageController {
     public String get(

@@ -22,6 +22,7 @@
 			ageRange: 		jq('#ageRange').val(),
 			lastDayOfVisit:	jq('#lastDayOfVisit-field').val(),
 			lastVisit: 		jq('#lastVisit').val(),
+			locations:		jq('#locations').val(),
             programId:      0
 		}
 		
@@ -46,8 +47,6 @@
 			if (result.patientProgram.patient.gender == 'F'){
 				gender = 'Female';
 			}
-			
-			
 			
 			dataRows.push([0, result.wrapperIdentifier, names, result.patientProgram.patient.age, gender, result.wrapperStatus, icons]);
 		});
@@ -90,7 +89,7 @@
 			oLanguage: {
 				"sInfo": "_TOTAL_ Patient(s) Found",
 				"sInfoEmpty": " ",
-				"sZeroRecords": "No Patients Found",
+				"sZeroRecords": "No Patients Found in the selected Location",
 				"sInfoFiltered": "(Showing _TOTAL_ of _MAX_ Patients)",
 				"oPaginate": {
 					"sFirst": "First",
@@ -161,7 +160,15 @@
 		
 		if ('${phrase}' !== ''){
 			getMdrtbpatients();
-		}		
+		}
+		
+		jq("#session-location ul.select").on('click', 'li', function (event) {
+			if (jq('#locations').val() != 0){
+				jq('#locations').val(locationId);			
+			}
+		});
+		
+		jq('#locations').val(${ sessionContext.sessionLocationId });
 	});
 	
 	jq.fn.clearForm = function() {
@@ -173,7 +180,7 @@
 			  this.value = '';
 			else if (type == 'checkbox' || type == 'radio')
 			  this.checked = false;
-			else if (tag == 'select')
+			else if (tag == 'select' && jq(this).attr('id') != 'locations')
 			  this.selectedIndex = -1;
 		});
 	};
@@ -404,6 +411,13 @@
 										</div>
 
 										<div class="col4 last">
+											<label for="locations">Location</label>
+											<select style="width: 172px" id="locations" name="locations">
+												<option value="0">All</option>
+												<% locations.eachWithIndex { location, index -> %>
+													<option value="${location.id}">${location.name}</option>
+												<% } %>
+											</select>
 										</div>
 									</div>
 								</li>

@@ -4,6 +4,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.*;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.appui.UiSessionContext;
+import org.openmrs.module.mdrtb.model.PersonLocation;
+import org.openmrs.module.mdrtb.service.MdrtbService;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,7 +48,8 @@ public class RegisterPageController {
 
     public String post(HttpServletRequest request,
                        PageModel model,
-                       UiUtils ui) throws IOException {
+                       UiUtils ui,
+                       UiSessionContext session) throws IOException {
         // list all parameter submitted
         Map<String, Object> params=new HashMap<String, Object>();
 
@@ -104,6 +108,13 @@ public class RegisterPageController {
         patient.setBirthdateEstimated(estimated);
 
         patient = Context.getPatientService().savePatient(patient);
+
+        PersonLocation pl = new PersonLocation();
+        pl.setPerson(patient);
+        pl.setLocation(session.getSessionLocation());
+        pl.setDescription("Registration");
+        Context.getService(MdrtbService.class).savePersonLocation(pl);
+
         params.put("patient", patient);
 
         return "redirect:" + ui.pageLink("mdrtbdashboard", "enroll", params);

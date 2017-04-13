@@ -18,7 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by Dennis Henry on 2/7/2017.
+ * Created by Dennis Henry
+ * Created on 2/7/2017.
  */
 public class EditPatientPageController {
     public void get(
@@ -61,6 +62,10 @@ public class EditPatientPageController {
         pn.setMiddleName(otherNames);
 
         PersonAddress pa = patient.getPersonAddress();
+        if (pa == null){
+            pa = new PersonAddress();
+        }
+
         pa.setAddress1(request.getParameter("address.address1"));
         pa.setAddress2(request.getParameter("address.address2"));
         pa.setCountry(request.getParameter("address.country"));

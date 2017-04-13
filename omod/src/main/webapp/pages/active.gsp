@@ -284,7 +284,7 @@
             </li>
             <li>
                 <i class="icon-chevron-right link"></i>
-                <a href="search.page">Active</a>
+                <a href="search.page">Search</a>
             </li>
             <li>
 				<i class="icon-chevron-right link"></i>

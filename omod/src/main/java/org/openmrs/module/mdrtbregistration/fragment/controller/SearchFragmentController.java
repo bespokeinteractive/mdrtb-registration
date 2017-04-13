@@ -1,8 +1,10 @@
 package org.openmrs.module.mdrtbregistration.fragment.controller;
 
+import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.mdrtb.program.MdrtbPatientProgram;
+import org.openmrs.module.mdrtb.service.MdrtbService;
 import org.openmrs.module.mdrtbdashboard.MdrtbPatientWrapper;
 import org.openmrs.module.mdrtbdashboard.api.MdrtbDashboardService;
 import org.openmrs.ui.framework.SimpleObject;
@@ -14,7 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Dennis Henry on 2/2/2017.
+ * Created by Dennis Henry
+ * Created on 2/2/2017.
  */
 
 public class SearchFragmentController {
@@ -35,8 +38,20 @@ public class SearchFragmentController {
         Integer ageRange = getInt(request.getParameter("ageRange"));
         Integer lastVisitRange = getInt(request.getParameter("lastVisit"));
         Integer programId = getInt(request.getParameter("programId"));
+        Integer locationId = getInt(request.getParameter("locations"));
 
-        List<MdrtbPatientProgram> mdrtbPatients = Context.getService(MdrtbDashboardService.class).getMdrtbPatients(phrase, gender, age, ageRange, lastDayOfVisit, lastVisitRange, programId);
+        List<Location> locations = new ArrayList<Location>();
+        if (locationId == 0){
+            locations = Context.getService(MdrtbService.class).getLocationsByUser();
+        }
+        else if (locationId != null) {
+            Location location = Context.getLocationService().getLocation(locationId);
+            locations.add(location);
+        }
+
+        System.out.println("LOCATION SIZZE:::: " + locations.size());
+
+        List<MdrtbPatientProgram> mdrtbPatients = Context.getService(MdrtbDashboardService.class).getMdrtbPatients(phrase, gender, age, ageRange, lastDayOfVisit, lastVisitRange, programId, locations);
         List<MdrtbPatientWrapper> wrapperList = mdrtbPatientsWithDetails(mdrtbPatients);
 
         return SimpleObject.fromCollection(wrapperList, ui, "patientProgram", "wrapperIdentifier", "wrapperNames", "wrapperStatus", "formartedVisitDate", "patientProgram.patient.patientId", "patientProgram.patient.age", "patientProgram.patient.gender");
