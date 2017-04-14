@@ -44,17 +44,18 @@ public class SearchFragmentController {
         if (locationId == 0){
             locations = Context.getService(MdrtbService.class).getLocationsByUser();
         }
+        else if (locationId == -1){
+            //Do nothing, Returns all Patients (Even those you don't have access to
+        }
         else if (locationId != null) {
             Location location = Context.getLocationService().getLocation(locationId);
             locations.add(location);
         }
 
-        System.out.println("LOCATION SIZZE:::: " + locations.size());
-
         List<MdrtbPatientProgram> mdrtbPatients = Context.getService(MdrtbDashboardService.class).getMdrtbPatients(phrase, gender, age, ageRange, lastDayOfVisit, lastVisitRange, programId, locations);
         List<MdrtbPatientWrapper> wrapperList = mdrtbPatientsWithDetails(mdrtbPatients);
 
-        return SimpleObject.fromCollection(wrapperList, ui, "patientProgram", "wrapperIdentifier", "wrapperNames", "wrapperStatus", "formartedVisitDate", "patientProgram.patient.patientId", "patientProgram.patient.age", "patientProgram.patient.gender");
+        return SimpleObject.fromCollection(wrapperList, ui, "patientProgram", "wrapperIdentifier", "wrapperNames", "wrapperStatus", "wrapperLocationId", "wrapperLocationName", "formartedVisitDate", "patientProgram.patient.patientId", "patientProgram.patient.age", "patientProgram.patient.gender");
     }
 
     private Integer getInt(String value) {

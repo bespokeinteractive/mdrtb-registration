@@ -39,9 +39,9 @@
 		searchResultsData = results || [];
 		var dataRows = [];
 		_.each(searchResultsData, function(result){
-			var names = '<a href="../mdrtbdashboard/main.page?patient=' + result.patientProgram.patient.patientId + '">' + result.wrapperNames + '</a>';
+			var names = '<a class="redirect" data-idnt="' + result.patientProgram.patient.patientId + '" data-location="' + result.wrapperLocationId + '" >' + result.wrapperNames + '</a>';
 			var remarks = 'N/A';
-			var icons = '<a href="editPatient.page?patient=' + result.patientProgram.patient.patientId + '"><i class="icon-edit small"></i></a> <a href="../mdrtbdashboard/main.page?patient=' + result.patientProgram.patient.patientId + '"><i class="icon-group small"></i></a> <a href="../mdrtbdashboard/main.page?patient=' + result.patientProgram.patient.patientId + '&tabs=chart"><i class="icon-bar-chart small"></i></a>';
+			var icons = '<a href="editPatient.page?patient=' + result.patientProgram.patient.patientId + '"><i class="icon-edit small"></i></a> <a href="../mdrtbdashboard/main.page?patient=' + result.patientProgram.patient.patientId + '&mode=view"><i class="icon-group small"></i></a> <a href="../mdrtbdashboard/main.page?patient=' + result.patientProgram.patient.patientId + '&tabs=chart"><i class="icon-bar-chart small"></i></a>';
 			var gender = 'Male';
 			
 			if (result.patientProgram.patient.gender == 'F'){
@@ -164,11 +164,29 @@
 		
 		jq("#session-location ul.select").on('click', 'li', function (event) {
 			if (jq('#locations').val() != 0){
-				jq('#locations').val(locationId);			
+				jq('#locations').val(locationId);
+
+				//Refresh the Table if it's not empty
+				if (searchTable.fnSettings().aoData.length > 0 || jq('#searchPhrase').val().length > 0){
+					getMdrtbpatients();
+				}
+			}			
+		});
+		
+		jq("#searchList").on('click','.redirect', function(){
+			var idnt = jq(this).data('idnt');
+			var loc1 = jq(this).data('location');
+			var loc2 = locationId?locationId:${sessionContext.sessionLocationId};
+			
+			if (loc1 == loc2){
+				window.location.href = "../mdrtbdashboard/main.page?patient=" + idnt;
+			}
+			else {
+				window.location.href = "../mdrtbdashboard/transferIn.page?patient=" + idnt;
 			}
 		});
 		
-		jq('#locations').val(${ sessionContext.sessionLocationId });
+		jq('#locations').val(${sessionContext.sessionLocationId});
 	});
 	
 	jq.fn.clearForm = function() {
@@ -312,6 +330,10 @@
 	table th, table td {
 		white-space: nowrap;
 	}
+	#locations option:last-child{
+		border-top: 1px dotted #333;
+		margin-top: 3px;
+	}
 </style>
 
 <div class="clear"></div>
@@ -413,10 +435,11 @@
 										<div class="col4 last">
 											<label for="locations">Location</label>
 											<select style="width: 172px" id="locations" name="locations">
-												<option value="0">All</option>
+												<option value="0">My Locations</option>
 												<% locations.eachWithIndex { location, index -> %>
 													<option value="${location.id}">${location.name}</option>
 												<% } %>
+												<option value="-1">All Locations</option>
 											</select>
 										</div>
 									</div>
