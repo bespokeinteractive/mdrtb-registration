@@ -67,7 +67,7 @@ public class EditPatientPageController {
         }
 
         pa.setAddress1(request.getParameter("address.address1"));
-        pa.setAddress2(request.getParameter("address.address2"));
+        pa.setAddress2(request.getParameter("address.telephone"));
         pa.setCountry(request.getParameter("address.country"));
         pa.setCityVillage(request.getParameter("address.cityVillage"));
         pa.setStateProvince(request.getParameter("address.stateProvince"));

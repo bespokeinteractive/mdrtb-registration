@@ -440,7 +440,7 @@
 							<ol>
 								<li>
 									<label for="names">Full Names:<span class="mandatory">*</span></label>
-									<input id="names" name="patient.name" type="text" value="${names?names:''}" class="required"/>
+									<input id="names" name="patient.name" type="text" value="${names?names:''}" class="required" placeholder="Full Names"/>
 								</li>
 								
 								<li>
@@ -461,8 +461,13 @@
 								</li>
 								
 								<li>
+									<label for="telephone">Telephone:<span class="mandatory"></span></label>
+									<input id="telephone" name="address.telephone" type="text" class="" placeholder="Telephone Number" />
+								</li>
+								
+								<li>
 									<label for="address1">Address:<span class="mandatory">*</span></label>
-									<textarea id="address1" name="address.address1" type="text" class="required"></textarea>									
+									<textarea id="address1" name="address.address1" type="text" class="required" placeholder="Address/Village"></textarea>
 								</li>
 								
 								<li>

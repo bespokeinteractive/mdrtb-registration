@@ -462,6 +462,11 @@
 								</li>
 								
 								<li>
+									<label for="telephone">Telephone:<span class="mandatory"></span></label>
+									<input id="telephone" name="address.telephone" type="text" class="" placeholder="Telephone Number" value="${patient.getPersonAddress().address2?patient.getPersonAddress().address2:''}" />
+								</li>
+								
+								<li>
 									<label for="address1">Address:<span class="mandatory">*</span></label>
 									<textarea id="address1" name="address.address1" type="text" class="required">${patient.getPersonAddress()?patient.getPersonAddress().address1:''}</textarea>									
 								</li>
