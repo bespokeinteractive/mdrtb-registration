@@ -39,6 +39,10 @@ public class SearchFragmentController {
         Integer lastVisitRange = getInt(request.getParameter("lastVisit"));
         Integer programId = getInt(request.getParameter("programId"));
         Integer locationId = getInt(request.getParameter("locations"));
+        Integer activeOnly = getInt(request.getParameter("active"));
+        if (activeOnly == 1){
+            programId = -1;
+        }
 
         List<Location> locations = new ArrayList<Location>();
         if (locationId == 0){

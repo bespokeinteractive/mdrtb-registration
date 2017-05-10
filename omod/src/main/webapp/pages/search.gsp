@@ -18,6 +18,7 @@
 		var requestData = {
 			phrase: 		jq('#searchPhrase').val(),
 			gender: 		jq('#gender').val(),
+			active:			jq('#activeOnly:checked').length,
 			age: 			jq('#age').val(),
 			ageRange: 		jq('#ageRange').val(),
 			lastDayOfVisit:	jq('#lastDayOfVisit-field').val(),
@@ -333,6 +334,9 @@
 	#locations option:last-child{
 		border-top: 1px dotted #333;
 		margin-top: 3px;
+	}	
+	.new-patient-header .demographics {
+		width: 99%;
 	}
 </style>
 
@@ -358,6 +362,7 @@
             <h1 class="name" style="border-bottom: 1px solid #ddd;">
                 <span>FIND PATIENT RECORDS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
             </h1>
+			<label style="float: right; margin-top: 10px; cursor: pointer;"><input type="checkbox" id="activeOnly" ${active?'checked="true"':active} style="cursor: pointer;" /> Only Active Patients</label>
             <br/>
         </div>
 		

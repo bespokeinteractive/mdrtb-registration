@@ -18,6 +18,7 @@ import java.util.List;
 public class SearchPageController {
     public String get(
             @RequestParam(value = "phrase", required=false) String phrase,
+            @RequestParam(value = "active", required=false) Boolean active,
             PageModel model,
             UiUtils ui) {
         List<Location> locations = Context.getService(MdrtbService.class).getLocationsByUser();
@@ -27,6 +28,7 @@ public class SearchPageController {
                 return lo1.getName().compareTo(lo2.getName());
             }
         });
+        model.addAttribute("active", active);
         model.addAttribute("phrase", phrase);
         model.addAttribute("locations", locations);
         return null;
