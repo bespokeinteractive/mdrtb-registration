@@ -143,7 +143,7 @@
 		
 		jq('input, select').keydown(function (e) {
 			var key = e.keyCode || e.which;
-			if (key == 9 || key == 13) {
+			if (key == 13) {
 				getMdrtbpatients(); 
 			}
 		});

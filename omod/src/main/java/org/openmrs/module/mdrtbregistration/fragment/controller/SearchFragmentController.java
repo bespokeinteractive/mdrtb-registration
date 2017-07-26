@@ -1,5 +1,6 @@
 package org.openmrs.module.mdrtbregistration.fragment.controller;
 
+import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
@@ -59,7 +60,7 @@ public class SearchFragmentController {
         List<MdrtbPatientProgram> mdrtbPatients = Context.getService(MdrtbDashboardService.class).getMdrtbPatients(phrase, gender, age, ageRange, lastDayOfVisit, lastVisitRange, programId, locations);
         List<MdrtbPatientWrapper> wrapperList = mdrtbPatientsWithDetails(mdrtbPatients);
 
-        return SimpleObject.fromCollection(wrapperList, ui, "patientProgram", "wrapperIdentifier", "wrapperNames", "wrapperStatus", "wrapperLocationId", "wrapperLocationName", "formartedVisitDate", "patientProgram.patient.patientId", "patientProgram.patient.age", "patientProgram.patient.gender");
+        return SimpleObject.fromCollection(wrapperList, ui, "wrapperRegisterDate", "wrapperTreatmentDate", "wrapperIdentifier", "wrapperNames", "wrapperStatus", "wrapperLocationId", "wrapperLocationName", "formartedVisitDate", "wrapperAddress", "patientProgram.patient.patientId", "patientProgram.patient.age", "patientProgram.patient.gender", "patientDetails.facility.name", "patientDetails.daamin", "patientDetails.diseaseSite.name", "patientDetails.patientCategory.concept.name", "patientDetails.patientType.concept.name", "wrapperCompletedDate", "wrapperOutcome", "wrapperArt", "wrapperCpt");
     }
 
     private Integer getInt(String value) {
