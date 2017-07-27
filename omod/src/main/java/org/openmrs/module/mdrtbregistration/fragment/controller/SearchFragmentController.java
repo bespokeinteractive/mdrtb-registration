@@ -45,6 +45,7 @@ public class SearchFragmentController {
         Integer locationId = getInt(request.getParameter("locations"));
         Integer activeOnly = getInt(request.getParameter("active"));
 
+        String daamin = request.getParameter("daamin");
         String enrolled = request.getParameter("enrolled");
         String finished = request.getParameter("finished");
 
@@ -72,7 +73,7 @@ public class SearchFragmentController {
         }
 
         List<MdrtbPatientProgram> mdrtbPatients = Context.getService(MdrtbDashboardService.class).getMdrtbPatients(phrase, gender, age, ageRange, lastDayOfVisit, lastVisitRange, programId, locations);
-        List<MdrtbPatientWrapper> wrapperList = mdrtbPatientsWithDetails(mdrtbPatients, status, site, diagnosis, outcome, enrolled, finished, artstatus, cptstatus);
+        List<MdrtbPatientWrapper> wrapperList = mdrtbPatientsWithDetails(mdrtbPatients, status, site, diagnosis, outcome, enrolled, finished, artstatus, cptstatus, daamin);
 
         return SimpleObject.fromCollection(wrapperList, ui, "wrapperRegisterDate", "wrapperTreatmentDate", "wrapperIdentifier", "wrapperNames", "wrapperStatus", "wrapperLocationId", "wrapperLocationName", "formartedVisitDate", "wrapperAddress", "patientProgram.patient.patientId", "patientProgram.patient.age", "patientProgram.patient.gender", "patientDetails.facility.name", "patientDetails.daamin", "patientDetails.diseaseSite.name", "patientDetails.patientCategory.concept.name", "patientDetails.patientType.concept.name", "wrapperCompletedDate", "wrapperOutcome", "wrapperArt", "wrapperCpt");
     }
@@ -85,7 +86,7 @@ public class SearchFragmentController {
         }
     }
 
-    private List<MdrtbPatientWrapper> mdrtbPatientsWithDetails(List<MdrtbPatientProgram> mdrtbPatients, Integer status, Integer site, Integer diagnosis, Integer outcome, String enrolled, String finished, Integer artstatus, Integer cptstatus) {
+    private List<MdrtbPatientWrapper> mdrtbPatientsWithDetails(List<MdrtbPatientProgram> mdrtbPatients, Integer status, Integer site, Integer diagnosis, Integer outcome, String enrolled, String finished, Integer artstatus, Integer cptstatus, String daamin) {
         List<MdrtbPatientWrapper> wrappers = new ArrayList<MdrtbPatientWrapper>();
         for (MdrtbPatientProgram patientProgram : mdrtbPatients) {
             if ((status == 1 && patientProgram.getPatientProgram().getDateCompleted() != null) || (status == 2 && patientProgram.getPatientProgram().getDateCompleted() == null)){
@@ -137,6 +138,12 @@ public class SearchFragmentController {
             }
             if ((cptstatus==126 && pw.getPatientDetails().getCptStarted().getId()!=126) || (cptstatus==127 && pw.getPatientDetails().getCptStarted().getId()!=127)){
                 continue;
+            }
+
+            if (StringUtils.isNotBlank(daamin)){
+                if (!pw.getPatientDetails().getDaamin().toLowerCase().contains(daamin.toLowerCase())){
+                    continue;
+                }
             }
 
             wrappers.add(pw);

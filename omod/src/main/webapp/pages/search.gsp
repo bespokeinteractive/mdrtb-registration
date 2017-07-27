@@ -19,8 +19,11 @@
 			phrase: 		jq('#searchPhrase').val(),
 			gender: 		jq('#gender').val(),
 			active:			jq('#activeOnly:checked').length,
+			daamin:			jq('#daamin').val(),
 			age: 			jq('#age').val(),
 			ageRange: 		jq('#ageRange').val(),
+			enrolled:		jq('#enrolled').val(),
+			finished:		jq('#finished').val(),
 			lastDayOfVisit:	jq('#lastDayOfVisit-field').val(),
 			lastVisit: 		jq('#lastVisit').val(),
 			locations:		jq('#locations').val(),
@@ -149,9 +152,42 @@
 		});
 		
 		jq('input, select').on('blur', function(){
-			if (jq(this).attr('id') !== 'searchPhrase'){
+			if (jq(this).attr('id') !== 'searchPhrase' && jq(this).attr('id') !== 'enrolled' && jq(this).attr('id') !== 'finished'){
 				getMdrtbpatients();
 			}
+		});
+		
+		jq('#enrolled, #finished').on('blur', function(){
+			var data = jq(this).val().replace('/', '-').split('-');
+			if (data.length == 2){
+				if (!jq.isNumeric(data[0]) || !jq.isNumeric(data[1])){
+					jq(this).val('');
+				}				
+				else if(data[0] > 4){
+					data[0]=4;
+				}
+				else if(data[0] < 1){
+					data[0]=1;
+				}
+				
+				if (jq(this).val().length == 4){
+					jq(this).val('0'+data[0]+'/20'+data[1]);
+				}
+				else if (jq(this).val().length == 5){
+					jq(this).val(data[0]+'/20'+data[1]);
+				}
+				else if (jq(this).val().length == 6 || jq(this).val().length == 7){
+					
+				}
+				else {
+					jq(this).val('');
+				}
+			}
+			else {
+				jq(this).val('');
+			}
+			
+			getMdrtbpatients();
 		});
 		
 		jq('#lastDayOfVisit-display').change(function(){
@@ -415,8 +451,7 @@
 												<option value="M">Male</option>
 												<option value="F">Female</option>
 											</select>
-										</div>
-										
+										</div>										
 									</div>
 
 									<div class="onerow" style="padding-top: 0px;">
@@ -447,6 +482,23 @@
 												<option value="-1">All Locations</option>
 											</select>
 										</div>
+									</div>
+									
+									<div class="onerow" style="padding-top: 0px;">
+										<div class="col4">
+											<label for="daamin">Daamin</label>
+											<input id="daamin" name="daamin" style="width: 172px; height: 34px;" placeholder="Supporter">
+										</div>										
+
+										<div class="col4">
+											<label for="enrolled">Qtr Enrolled</label>
+											<input id="enrolled" name="enrolled" style="width: 172px; height: 34px; margin-top: 1px;" placeholder="QQ/YYYY">
+										</div>
+
+										<div class="col4 last">
+											<label for="finished">Qtr Finished</label>
+											<input id="finished" name="finished" style="width: 172px; height: 34px; margin-top: 1px;" placeholder="QQ/YYYY">
+										</div>										
 									</div>
 								</li>
 							</ul>

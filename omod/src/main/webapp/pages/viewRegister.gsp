@@ -540,13 +540,13 @@
 				</field>
 				
 				<field>
-					<label for="enrolled">QTR Enrolled</label>
-					<input id="enrolled" name="enrolled" placeholder="MM/YYYY">
+					<label for="enrolled">Qtr Enrolled</label>
+					<input id="enrolled" name="enrolled" placeholder="QQ/YYYY">
 				</field>
 				
 				<field>
-					<label for="finished">QTR Finished</label>
-					<input id="finished" name="finished" placeholder="MM/YYYY">
+					<label for="finished">Qtr Finished</label>
+					<input id="finished" name="finished" placeholder="QQ/YYYY">
 				</field>
 			</div>
 			
