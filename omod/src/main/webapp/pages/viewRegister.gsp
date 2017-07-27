@@ -22,6 +22,14 @@
 			ageRange: 		jq('#ageRange').val(),
 			lastDayOfVisit:	'',
 			lastVisit: 		0,
+			site:			jq('#site').val(),
+			status:			jq('#status').val(),
+			outcome:		jq('#outcome').val(),
+			enrolled:		jq('#enrolled').val(),
+			finished:		jq('#finished').val(),
+			diagnosis:		jq('#diagnosis').val(),
+			artstatus:		jq('#artstatus').val(),
+			cptstatus:		jq('#cptstatus').val(),
 			programId:		jq('#program').val(),
 			locations:		jq('#locations').val()
 		}
@@ -145,6 +153,16 @@
 		
 		jq('#advanced').click(function(){
 			jq('.content-filter').toggle();
+			var adv = jq('#advanced i')
+			
+			if(adv.hasClass("icon-double-angle-down")){
+				adv.removeClass("icon-double-angle-down");
+				adv.addClass("icon-double-angle-up");
+			}
+			else {
+				adv.removeClass("icon-double-angle-up");
+				adv.addClass("icon-double-angle-down");
+			}
 		});
 		
 		jq('input, select').keydown(function (e) {
@@ -155,6 +173,42 @@
 		});
 		
 		jq('input, select').on('change', function(){
+			if (jq(this).attr('id')=='enrolled' || jq(this).attr('id')=='finished'){
+				return false;
+			}
+			getPatientRegister();
+		});
+		
+		jq('#enrolled, #finished').on('blur', function(){
+			var data = jq(this).val().replace('/', '-').split('-');
+			if (data.length == 2){
+				if (!jq.isNumeric(data[0]) || !jq.isNumeric(data[1])){
+					jq(this).val('');
+				}				
+				else if(data[0] > 4){
+					data[0]=4;
+				}
+				else if(data[0] < 1){
+					data[0]=1;
+				}
+				
+				if (jq(this).val().length == 4){
+					jq(this).val('0'+data[0]+'/20'+data[1]);
+				}
+				else if (jq(this).val().length == 5){
+					jq(this).val(data[0]+'/20'+data[1]);
+				}
+				else if (jq(this).val().length == 6 || jq(this).val().length == 7){
+					
+				}
+				else {
+					jq(this).val('');
+				}
+			}
+			else {
+				jq(this).val('');
+			}
+			
 			getPatientRegister();
 		});
 		
@@ -387,7 +441,18 @@
 		border-top: 1px dotted #333;
 		margin-top: 3px;
 	}
-	
+	.dataTables_wrapper {
+		min-height: 0;
+	}
+	div.export {
+		display: inline-block;
+		float: right;
+		font-size: 0.9em;
+		margin: 10px 20px 0 0;
+	}
+	div.export a{
+		text-decoration: underline;
+	}
 </style>
 
 <div class="clear"></div>
@@ -419,6 +484,8 @@
 				<i class="icon-double-angle-down small"></i>
 				FILTER PATIENTS
 			</div>
+			
+			<div class="export"><a href="">Export Register</a></div>
         </div>
 		<div class="clear both"></div>
 		
@@ -487,16 +554,16 @@
 				<field>
 					<label for="status">Status</label>
 					<select id="status" name="status" class="first-underline">
-						<option value="">All Patients</option>
-						<option value="1">Active Program</option>
-						<option value="2">Not-In Program</option>
+						<option value="0">All Programs</option>
+						<option value="1">ACTIVE PROGRAM</option>
+						<option value="2">NOT-IN PROGRAM</option>
 					</select>
 				</field>
 				
 				<field>
-					<label for="status">Site</label>
-					<select id="status" name="status" class="first-underline">
-						<option value="">All Sites</option>
+					<label for="site">Site</label>
+					<select id="site" name="site" class="first-underline">
+						<option value="0">All Sites</option>
 						<option value="63">PULMONARY TB</option>
 						<option value="163">EXTRA-PULMONARY TB</option>
 					</select>
@@ -505,7 +572,7 @@
 				<field>
 					<label for="diagnosis">Diagnosis</label>
 					<select id="diagnosis" name="diagnosis" class="first-underline">
-						<option value="">All Diagnoses</option>
+						<option value="0">All Diagnoses</option>
 						<option value="1160664">CLINICALLY DIAGNOSED</option>
 						<option value="1160663">BACTERIOLOGICAL CONFIRMED</option>
 					</select>
@@ -515,6 +582,12 @@
 					<label for="outcome">Outcome</label>
 					<select id="outcome" name="outcome" class="first-underline">
 						<option value="">All Outcomes</option>
+						<option value="57">TREATMENT COMPLETE</option>
+						<option value="37">PATIENT CURED</option>
+						<option value="110">PATIENT DIED</option>
+						<option value="188">LOST TO FOLLOWUP</option>
+						<option value="147">TREATMENT FAILURE</option>
+						<option value="171">PATIENT NOT EVALUATED</option>
 					</select>
 				</field>
 			</div>
@@ -524,18 +597,18 @@
 				<field>
 					<label for="artstatus">ART Status</label>
 					<select id="artstatus" name="artstatus" class="first-underline">
-						<option value="-1">All Statuses</option>
-						<option value="1">STARTED ON ART</option>
-						<option value="2">NOT STARTED ART</option>
+						<option value="0">All Statuses</option>
+						<option value="127">STARTED ON ART</option>
+						<option value="126">NOT STARTED ART</option>
 					</select>
 				</field>
 				
 				<field>
 					<label for="cptstatus">CPT Status</label>
 					<select id="cptstatus" name="cptstatus" class="first-underline">
-						<option value="-1">All Statuses</option>
-						<option value="1">STARTED ON CPT</option>
-						<option value="2">NOT STARTED CPT</option>
+						<option value="0">All Statuses</option>
+						<option value="127">STARTED ON CPT</option>
+						<option value="126">NOT STARTED CPT</option>
 					</select>
 				</field>
 			</div>
