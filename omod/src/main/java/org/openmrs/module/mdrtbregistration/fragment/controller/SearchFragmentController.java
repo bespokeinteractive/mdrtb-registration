@@ -60,6 +60,42 @@ public class SearchFragmentController {
             programId = -1;
         }
 
+        List<Location> locations = getLocations(locationId);
+
+        List<MdrtbPatientProgram> mdrtbPatients = Context.getService(MdrtbDashboardService.class).getMdrtbPatients(phrase, gender, age, ageRange, lastDayOfVisit, lastVisitRange, programId, locations);
+        List<MdrtbPatientWrapper> wrapperList = mdrtbPatientsWithDetails(mdrtbPatients, status, site, diagnosis, outcome, enrolled, finished, artstatus, cptstatus, daamin);
+
+        return SimpleObject.fromCollection(wrapperList, ui, "wrapperRegisterDate", "wrapperTreatmentDate", "wrapperIdentifier", "wrapperNames", "wrapperStatus", "wrapperLocationId", "wrapperLocationName", "formartedVisitDate", "wrapperAddress", "patientProgram.patient.patientId", "patientProgram.patient.age", "patientProgram.patient.gender", "patientDetails.facility.name", "patientDetails.daamin", "patientDetails.diseaseSite.name", "patientDetails.patientCategory.concept.name", "patientDetails.patientType.concept.name", "wrapperCompletedDate", "wrapperOutcome", "wrapperArt", "wrapperCpt");
+    }
+
+    public List<SimpleObject> searchRegister(UiUtils ui,
+                                             HttpServletRequest request) {
+        Integer age = getInt(request.getParameter("age"));
+        Integer ageRange = getInt(request.getParameter("ageRange"));
+        Integer programId = getInt(request.getParameter("programId"));
+        Integer locationId = getInt(request.getParameter("locations"));
+
+        String gender = request.getParameter("gender");
+        String daamin = request.getParameter("daamin");
+        String enrolled = request.getParameter("enrolled");
+        String finished = request.getParameter("finished");
+
+        Integer status = getInt(request.getParameter("status"));
+        Integer site = getInt(request.getParameter("site"));
+        Integer outcome = getInt(request.getParameter("outcome"));
+        Integer diagnosis = getInt(request.getParameter("diagnosis"));
+        Integer artstatus = getInt(request.getParameter("artstatus"));
+        Integer cptstatus = getInt(request.getParameter("cptstatus"));
+
+        List<Location> locations = getLocations(locationId);
+
+        List<MdrtbPatientProgram> mdrtbPatients = Context.getService(MdrtbDashboardService.class).getMdrtbPatients(gender, age, ageRange, programId, locations);
+        List<MdrtbPatientWrapper> wrapperList = mdrtbPatientsWithDetails(mdrtbPatients, status, site, diagnosis, outcome, enrolled, finished, artstatus, cptstatus, daamin);
+
+        return SimpleObject.fromCollection(wrapperList, ui, "wrapperRegisterDate", "wrapperTreatmentDate", "wrapperIdentifier", "wrapperNames", "wrapperStatus", "wrapperLocationId", "wrapperLocationName", "formartedVisitDate", "wrapperAddress", "patientProgram.patient.patientId", "patientProgram.patient.age", "patientProgram.patient.gender", "patientDetails.facility.name", "patientDetails.daamin", "patientDetails.diseaseSite.name", "patientDetails.patientCategory.concept.name", "patientDetails.patientType.concept.name", "wrapperCompletedDate", "wrapperOutcome", "wrapperArt", "wrapperCpt");
+    }
+
+    private List<Location> getLocations(Integer locationId) {
         List<Location> locations = new ArrayList<Location>();
         if (locationId == 0){
             locations = Context.getService(MdrtbService.class).getLocationsByUser();
@@ -71,11 +107,7 @@ public class SearchFragmentController {
             Location location = Context.getLocationService().getLocation(locationId);
             locations.add(location);
         }
-
-        List<MdrtbPatientProgram> mdrtbPatients = Context.getService(MdrtbDashboardService.class).getMdrtbPatients(phrase, gender, age, ageRange, lastDayOfVisit, lastVisitRange, programId, locations);
-        List<MdrtbPatientWrapper> wrapperList = mdrtbPatientsWithDetails(mdrtbPatients, status, site, diagnosis, outcome, enrolled, finished, artstatus, cptstatus, daamin);
-
-        return SimpleObject.fromCollection(wrapperList, ui, "wrapperRegisterDate", "wrapperTreatmentDate", "wrapperIdentifier", "wrapperNames", "wrapperStatus", "wrapperLocationId", "wrapperLocationName", "formartedVisitDate", "wrapperAddress", "patientProgram.patient.patientId", "patientProgram.patient.age", "patientProgram.patient.gender", "patientDetails.facility.name", "patientDetails.daamin", "patientDetails.diseaseSite.name", "patientDetails.patientCategory.concept.name", "patientDetails.patientType.concept.name", "wrapperCompletedDate", "wrapperOutcome", "wrapperArt", "wrapperCpt");
+        return locations;
     }
 
     private Integer getInt(String value) {
