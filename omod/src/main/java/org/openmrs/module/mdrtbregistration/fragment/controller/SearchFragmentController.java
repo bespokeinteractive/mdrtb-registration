@@ -63,7 +63,7 @@ public class SearchFragmentController {
         List<Location> locations = getLocations(locationId);
 
         List<MdrtbPatientProgram> mdrtbPatients = Context.getService(MdrtbDashboardService.class).getMdrtbPatients(phrase, gender, age, ageRange, lastDayOfVisit, lastVisitRange, programId, locations);
-        List<MdrtbPatientWrapper> wrapperList = mdrtbPatientsWithDetails(mdrtbPatients, status, site, diagnosis, outcome, enrolled, finished, artstatus, cptstatus, daamin);
+        List<MdrtbPatientWrapper> wrapperList = mdrtbPatientsWithDetails(mdrtbPatients, status, site, diagnosis, outcome, enrolled, finished, artstatus, cptstatus, daamin, 0);
 
         return SimpleObject.fromCollection(wrapperList, ui, "wrapperRegisterDate", "wrapperTreatmentDate", "wrapperIdentifier", "wrapperNames", "wrapperStatus", "wrapperLocationId", "wrapperLocationName", "formartedVisitDate", "wrapperAddress", "patientProgram.patient.patientId", "patientProgram.patient.age", "patientProgram.patient.gender", "patientDetails.facility.name", "patientDetails.daamin", "patientDetails.diseaseSite.name", "patientDetails.patientCategory.concept.name", "patientDetails.patientType.concept.name", "wrapperCompletedDate", "wrapperOutcome", "wrapperArt", "wrapperCpt");
     }
@@ -83,6 +83,7 @@ public class SearchFragmentController {
         Integer status = getInt(request.getParameter("status"));
         Integer site = getInt(request.getParameter("site"));
         Integer outcome = getInt(request.getParameter("outcome"));
+        Integer transfer = getInt(request.getParameter("transfer"));
         Integer diagnosis = getInt(request.getParameter("diagnosis"));
         Integer artstatus = getInt(request.getParameter("artstatus"));
         Integer cptstatus = getInt(request.getParameter("cptstatus"));
@@ -90,7 +91,7 @@ public class SearchFragmentController {
         List<Location> locations = getLocations(locationId);
 
         List<MdrtbPatientProgram> mdrtbPatients = Context.getService(MdrtbDashboardService.class).getMdrtbPatients(gender, age, ageRange, programId, locations);
-        List<MdrtbPatientWrapper> wrapperList = mdrtbPatientsWithDetails(mdrtbPatients, status, site, diagnosis, outcome, enrolled, finished, artstatus, cptstatus, daamin);
+        List<MdrtbPatientWrapper> wrapperList = mdrtbPatientsWithDetails(mdrtbPatients, status, site, diagnosis, outcome, enrolled, finished, artstatus, cptstatus, daamin, transfer);
 
         return SimpleObject.fromCollection(wrapperList, ui, "wrapperRegisterDate", "wrapperTreatmentDate", "wrapperIdentifier", "wrapperNames", "wrapperStatus", "wrapperLocationId", "wrapperLocationName", "formartedVisitDate", "wrapperAddress", "patientProgram.patient.patientId", "patientProgram.patient.age", "patientProgram.patient.gender", "patientDetails.facility.name", "patientDetails.daamin", "patientDetails.diseaseSite.name", "patientDetails.patientCategory.concept.name", "patientDetails.patientType.concept.name", "wrapperCompletedDate", "wrapperOutcome", "wrapperArt", "wrapperCpt");
     }
@@ -118,7 +119,7 @@ public class SearchFragmentController {
         }
     }
 
-    private List<MdrtbPatientWrapper> mdrtbPatientsWithDetails(List<MdrtbPatientProgram> mdrtbPatients, Integer status, Integer site, Integer diagnosis, Integer outcome, String enrolled, String finished, Integer artstatus, Integer cptstatus, String daamin) {
+    private List<MdrtbPatientWrapper> mdrtbPatientsWithDetails(List<MdrtbPatientProgram> mdrtbPatients, Integer status, Integer site, Integer diagnosis, Integer outcome, String enrolled, String finished, Integer artstatus, Integer cptstatus, String daamin, Integer transfer) {
         List<MdrtbPatientWrapper> wrappers = new ArrayList<MdrtbPatientWrapper>();
         for (MdrtbPatientProgram patientProgram : mdrtbPatients) {
             if ((status == 1 && patientProgram.getPatientProgram().getDateCompleted() != null) || (status == 2 && patientProgram.getPatientProgram().getDateCompleted() == null)){
@@ -159,7 +160,7 @@ public class SearchFragmentController {
             if ((diagnosis==1160663 && pw.getPatientDetails().getConfirmationSite().getId()!=1160663) || (diagnosis==1160664 && pw.getPatientDetails().getConfirmationSite().getId()!=1160664)){
                 continue;
             }
-            if (outcome > 0 && pw.getPatientDetails().getOutcome() == null){
+            if ((outcome > 0 || transfer == 171) && pw.getPatientDetails().getOutcome() == null){
                 continue;
             }
             if ((outcome==37 && pw.getPatientDetails().getOutcome().getId()!=37) || (outcome==57 && pw.getPatientDetails().getOutcome().getId()!=57) || (outcome==110 && pw.getPatientDetails().getOutcome().getId()!=110) || (outcome==147 && pw.getPatientDetails().getOutcome().getId()!=147) || (outcome==171 && pw.getPatientDetails().getOutcome().getId() != 171) || (outcome==181 && pw.getPatientDetails().getOutcome().getId()!=181)){
@@ -169,6 +170,9 @@ public class SearchFragmentController {
                 continue;
             }
             if ((cptstatus==126 && pw.getPatientDetails().getCptStarted().getId()!=126) || (cptstatus==127 && pw.getPatientDetails().getCptStarted().getId()!=127)){
+                continue;
+            }
+            if (transfer==113 && pw.getPatientDetails().getPatientType().getConcept().getId()!=113){
                 continue;
             }
 

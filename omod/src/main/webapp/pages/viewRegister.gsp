@@ -24,6 +24,7 @@
 			outcome:		jq('#outcome').val(),
 			enrolled:		jq('#enrolled').val(),
 			finished:		jq('#finished').val(),
+			transfer:		jq('#transfer').val(),
 			diagnosis:		jq('#diagnosis').val(),
 			artstatus:		jq('#artstatus').val(),
 			cptstatus:		jq('#cptstatus').val(),
@@ -371,7 +372,10 @@
 		float: right;
 		font-size: 0.75em;
 		margin: 20px 3px 0;
-	}	
+	}
+	#header {
+		width: 1620px;
+	}
 	#body-wrapper {
 		max-width: 1600px;
 		width: 1600px;
@@ -520,9 +524,9 @@
 				<field>
 					<label for="transfer">Transfer</label>
 					<select id="transfer" name="transfer" class="first-underline">
-						<option value="">All Patients</option>
-						<option value="M">TRANSFERED IN</option>
-						<option value="F">TRANSFERED OUT</option>
+						<option value="0">All Patients</option>
+						<option value="113">TRANSFERED IN</option>
+						<option value="171">TRANSFERED OUT</option>
 					</select>
 				</field>
 			</div>

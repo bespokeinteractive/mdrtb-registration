@@ -22,10 +22,11 @@
 			ageRange: 		0,
 			lastDayOfVisit:	'',
 			lastVisit: 		0,
-			programId:		${program}
+			programId:		${program},
+			locations:		locationId?locationId:${sessionContext.sessionLocationId}
 		}
 		
-		jq.getJSON(emr.fragmentActionLink("mdrtbregistration", "search", "searchPatient"), requestData)
+		jq.getJSON(emr.fragmentActionLink("mdrtbregistration", "search", "searchRegister"), requestData)
 			.success(function (data) {
 				updateSearchResults(data);
 			}).error(function (xhr, status, err) {
@@ -122,6 +123,14 @@
 		}).api().draw();
 		
 		//End of DataTables
+		
+		jq("#session-location ul.select").on('click', 'li', function (event) {
+			if (jq('#locations').val() != 0){
+				jq('#locations').val(locationId);
+				
+				getMdrtbpatients();
+			}			
+		});
 		
 		jq('#searchPhrase').on('keyup', function(){
 			searchTable.api().search(this.value).draw();
