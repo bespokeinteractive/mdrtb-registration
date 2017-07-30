@@ -39,7 +39,7 @@
 		searchResultsData = results || [];
 		var dataRows = [];
 		_.each(searchResultsData, function(result){
-			var names = '<a href="../mdrtbdashboard/main.page?patient=' + result.patientProgram.patient.patientId + '">' + result.wrapperNames + '</a>';
+			var names = '<a href="../mdrtbdashboard/main.page?patient='+result.patientProgram.patient.patientId+'&programId='+result.patientProgram.id+'">' + result.wrapperNames + '</a>';
 			var remarks = 'N/A';
 			var icons = '<a href="editPatient.page?patient=' + result.patientProgram.patient.patientId + '"><i class="icon-edit small"></i></a> <a href="../mdrtbdashboard/main.page?patient=' + result.patientProgram.patient.patientId + '"><i class="icon-group small"></i></a> <a href="../mdrtbdashboard/main.page?patient=' + result.patientProgram.patient.patientId + '&tabs=chart"><i class="icon-bar-chart small"></i></a>';
 			var gender = 'Male';

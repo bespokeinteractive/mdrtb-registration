@@ -45,7 +45,7 @@
 		registerResultsData = results || [];
 		var dataRows = [];
 		_.each(registerResultsData, function(result){
-			var names = '<a class="redirect" data-idnt="' + result.patientProgram.patient.patientId + '" data-location="' + result.wrapperLocationId + '" >' + result.wrapperNames + '</a>';		
+			var names = '<a class="redirect" data-idnt="' + result.patientProgram.patient.patientId + '" data-location="' + result.wrapperLocationId + '" data-program="'+result.patientProgram.id+'">' + result.wrapperNames + '</a>';		
 			var sites = result.patientDetails.diseaseSite?(result.patientDetails.diseaseSite.name == 'PULMONARY TUBERCULOSIS'?'PB':'EP'):'N/A';
 			var facility = result.patientDetails.facility?result.patientDetails.facility.name:'N/A';
 			var daamin = result.patientDetails.facility?result.patientDetails.daamin:'—';
@@ -141,11 +141,12 @@
 		
 		jq("#registerList").on('click','.redirect', function(){
 			var idnt = jq(this).data('idnt');
+			var prog = jq(this).data('program');
 			var loc1 = jq(this).data('location');
 			var loc2 = locationId?locationId:${sessionContext.sessionLocationId};
 			
 			if (loc1 == loc2){
-				window.location.href = "../mdrtbdashboard/main.page?patient=" + idnt;
+				window.location.href = "../mdrtbdashboard/main.page?patient="+idnt+"&programId="+prog;
 			}
 			else {
 				window.location.href = "../mdrtbdashboard/transferIn.page?patient=" + idnt;
