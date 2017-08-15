@@ -1,5 +1,5 @@
 <%
-    ui.decorateWith("appui", "standardEmrPage", [title: "TB Patients Register"])
+    ui.decorateWith("appui", "standardEmrPage", [title: "DR-TB Register"])
 	
 	ui.includeCss("mdrtbregistration", "onepcssgrid.css")
 	ui.includeCss("uicommons", "datatables/dataTables_jui.css")
@@ -16,6 +16,7 @@
 	var getPatientRegister = function(){
 		registerTableObject.find('td.dataTables_empty').html('<span><img class="search-spinner" src="'+emr.resourceLink('uicommons', 'images/spinner.gif')+'" /></span>');
 		var requestData = {
+			register:		2,
 			gender: 		jq('#gender').val(),
 			age: 			jq('#age').val(),
 			ageRange: 		jq('#ageRange').val(),
@@ -47,10 +48,8 @@
 		_.each(registerResultsData, function(result){
 			var names = '<a class="redirect" data-idnt="' + result.patientProgram.patient.patientId + '" data-location="' + result.wrapperLocationId + '" data-program="'+result.patientProgram.id+'">' + result.wrapperNames + '</a>';		
 			var sites = result.patientDetails.diseaseSite?(result.patientDetails.diseaseSite.name == 'PULMONARY TUBERCULOSIS'?'PB':'EP'):'N/A';
-			var facility = result.patientDetails.facility?result.patientDetails.facility.name:'N/A';
-			var daamin = result.patientDetails.facility?result.patientDetails.daamin:'—';
-			
-			dataRows.push([0, result.wrapperRegisterDate, result.wrapperIdentifier, names, result.patientProgram.patient.gender, result.patientProgram.patient.age, result.wrapperAddress, facility, daamin, 'YES', result.wrapperTreatmentDate, result.patientDetails.patientCategory.concept.name, sites, result.patientDetails.patientType.concept.name, result.wrapperCompletedDate, result.wrapperOutcome, result.wrapperArt, result.wrapperCpt]);
+				
+			dataRows.push([0, result.patientDetails.secondLineNumber, result.wrapperSecondLineDate, names, result.patientProgram.patient.gender, result.patientProgram.patient.age, result.wrapperAddress, result.wrapperIdentifier, result.wrapperRegisterDate, sites, result.patientDetails.patientType.concept.name, '', '', '', '', '', '', '', result.wrapperReason, result.drVisits.xpertZero, result.drVisits.smearZero, result.drVisits.cultureZero, result.drVisits.smearOne, result.drVisits.cultureOne, result.drVisits.smearTwo, result.drVisits.cultureTwo, result.drVisits.smearThree, result.drVisits.cultureThree, result.drVisits.smearFour, result.drVisits.cultureFour, result.drVisits.smearFive, result.drVisits.cultureFive, result.drVisits.smearSix, result.drVisits.cultureSix, result.drVisits.smearSeven, result.drVisits.cultureSeven, result.drVisits.smearEight, result.drVisits.cultureEight, result.drVisits.smearNine, result.drVisits.cultureNine, result.drVisits.smearTen, result.drVisits.cultureTen, result.drVisits.smearEleven, result.drVisits.cultureEleven, result.drVisits.smearTwelve, result.drVisits.cultureTwelve, result.drVisits.smearThirteen, result.drVisits.cultureThirteen, result.drVisits.smearFourteen, result.drVisits.cultureFourteen, result.drVisits.smearFifteen, result.drVisits.cultureFifteen, result.drVisits.smearSixteen, result.drVisits.cultureSixteen, result.drVisits.smearSeventeen, result.drVisits.cultureSeventeen, result.drVisits.smearEighteen, result.drVisits.cultureEighteen, result.drVisits.smearNineteen, result.drVisits.cultureNineteen, result.drVisits.smearTwenty, result.drVisits.cultureTwenty, result.wrapperArt, result.wrapperCpt]);
 		});
 
 		registerTable.api().clear();
@@ -375,14 +374,14 @@
 		margin: 20px 3px 0;
 	}
 	#header {
-		width: 1620px;
+		width: 3420px;
 	}
 	#body-wrapper {
-		max-width: 1600px;
-		width: 1600px;
+		max-width: 3800px;
+		width: 3400px;
 	}
 	table {
-		font-size: 12px;
+		font-size: 10px;
 	}
 	.advanced {
 		background: #363463 none repeat scroll 0 0;
@@ -534,11 +533,9 @@
 			
 			<div class="rows2">
 				<field>
-					<label for="program">Program</label>
-					<select id="program" name="program" class="first-underline">
-						<option value="0">All Programs</option>
-						<option value="1">TB Patients</option>
-						<option value="2">MDRTB Patients</option>
+					<label for="program">Resistance</label>
+					<select id="program" name="program">
+						<option value="2">Drug Resistant</option>
 					</select>
 				</field>
 				
@@ -633,21 +630,70 @@
 			<table id="registerList">
 				<thead>
 					<th>#</th>
+					<th>SECONDLINE</th>
 					<th>REG.DATE</th>
-					<th>TBMU NO.</th>
 					<th>NAME</th>
 					<th>SEX</th>
 					<th>AGE</th>
-					<th>ADDRESS</th>
-					<th>FACILITY</th>
-					<th>SUPPORTER</th>
-					<th>DOT</th>
-					<th>STARTED</th>
-					<th>CATEGORY</th>
+					<th>ADDRESS</th>					
+					<th>BMU.NO</th>
+					<th>BMU.DATE</th>					
 					<th>SITE</th>
-					<th>TYPE</th>
-					<th>COMPLETED</th>
-					<th>OUTCOME</th>
+					<th>GROUP</th>
+					
+					<th>H</th>
+					<th>R</th>
+					<th>E</th>
+					<th>S</th>
+					<th>AMK</th>
+					<th>CM</th>
+					<th>FQ</th>
+					
+					<th>REASON</th>
+
+					<th>S(START)</th>
+					<th>C</th>
+					<th>X</th>					
+					<th>S(1MNTH)</th>
+					<th>C</th>
+					<th>S(2MNTH)</th>
+					<th>C</th>
+					<th>S(3MNTH)</th>
+					<th>C</th>
+					<th>S(4MNTH)</th>
+					<th>C</th>
+					<th>S(5MNTH)</th>
+					<th>C</th>
+					<th>S(6MNTH)</th>
+					<th>C</th>
+					<th>S(7MNTH)</th>
+					<th>C</th>
+					<th>S(8MNTH)</th>
+					<th>C</th>
+					<th>S(9MNTH)</th>
+					<th>C</th>
+					<th>S(10MNTH)</th>
+					<th>C</th>
+					<th>S(11MNTH)</th>
+					<th>C</th>
+					<th>S(12MNTH)</th>
+					<th>C</th>
+					<th>S(13MNTH)</th>
+					<th>C</th>
+					<th>S(14MNTH)</th>
+					<th>C</th>
+					<th>S(15MNTH)</th>
+					<th>C</th>
+					<th>S(16MNTH)</th>
+					<th>C</th>
+					<th>S(17MNTH)</th>
+					<th>C</th>
+					<th>S(18MNTH)</th>
+					<th>C</th>
+					<th>S(19MNTH)</th>
+					<th>C</th>
+					<th>S(20MNTH)</th>
+					<th>C</th>
 					<th>ART</th>
 					<th>CPT</th>
 				</thead>
