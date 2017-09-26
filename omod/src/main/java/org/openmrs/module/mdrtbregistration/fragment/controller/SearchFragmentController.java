@@ -3,11 +3,14 @@ package org.openmrs.module.mdrtbregistration.fragment.controller;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Location;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.mdrtb.program.MdrtbPatientProgram;
 import org.openmrs.module.mdrtb.service.MdrtbService;
 import org.openmrs.module.mdrtbdashboard.MdrtbPatientWrapper;
 import org.openmrs.module.mdrtbdashboard.MdrtbRegisterWrapper;
+import org.openmrs.module.mdrtbdashboard.MdrtbTransferWrapper;
 import org.openmrs.module.mdrtbdashboard.api.MdrtbDashboardService;
+import org.openmrs.module.mdrtbdashboard.model.PatientProgramTransfers;
 import org.openmrs.module.mdrtbdashboard.util.DateRangeModel;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
@@ -102,6 +105,14 @@ public class SearchFragmentController {
             List<MdrtbRegisterWrapper> wrapperList = mdrtbRegisterWithDetails(mdrtbPatients, status, site, diagnosis, outcome, enrolled, finished, artstatus, cptstatus, daamin, transfer);
             return SimpleObject.fromCollection(wrapperList, ui, "patientDetails.secondLineNumber", "wrapperIdentifier", "wrapperSecondLineDate", "wrapperRegisterDate", "wrapperLocationId", "wrapperReason", "wrapperNames", "wrapperStatus", "wrapperAddress", "patientProgram.id", "patientProgram.patient.patientId", "patientProgram.patient.age", "patientProgram.patient.gender", "patientDetails.diseaseSite.name", "patientDetails.patientType.concept.name", "wrapperArt", "wrapperCpt", "drVisits.xpertZero", "drVisits.smearZero", "drVisits.cultureZero", "drVisits.smearOne", "drVisits.cultureOne", "drVisits.smearTwo", "drVisits.cultureTwo", "drVisits.smearThree", "drVisits.cultureThree", "drVisits.smearFour", "drVisits.cultureFour", "drVisits.smearFive", "drVisits.cultureFive", "drVisits.smearSix", "drVisits.cultureSix", "drVisits.smearSeven", "drVisits.cultureSeven", "drVisits.smearEight", "drVisits.cultureEight", "drVisits.smearNine", "drVisits.cultureNine", "drVisits.smearTen", "drVisits.cultureTen", "drVisits.smearEleven", "drVisits.cultureEleven", "drVisits.smearTwelve", "drVisits.cultureTwelve", "drVisits.smearThirteen", "drVisits.cultureThirteen", "drVisits.smearFourteen", "drVisits.cultureFourteen", "drVisits.smearFifteen", "drVisits.cultureFifteen", "drVisits.smearSixteen", "drVisits.cultureSixteen", "drVisits.smearSeventeen", "drVisits.cultureSeventeen", "drVisits.smearEighteen", "drVisits.cultureEighteen", "drVisits.smearNineteen", "drVisits.cultureNineteen", "drVisits.smearTwenty", "drVisits.cultureTwenty");
         }
+    }
+
+    public List<SimpleObject> searchTransferredPatients(UiUtils ui,
+                                                        UiSessionContext session) {
+        List<PatientProgramTransfers> transfers = Context.getService(MdrtbDashboardService.class).getPatientProgramTransfers(session.getSessionLocation(), false);
+        List<MdrtbTransferWrapper> wrapperList = mdrtbTransferWithDetails(transfers);
+
+        return SimpleObject.fromCollection(wrapperList, ui, "wrapperIdentifier", "wrapperNames", "wrapperDated", "patientTransfers.patientProgram.id", "patientTransfers.patientProgram.patient.patientId", "patientTransfers.patientProgram.patient.age", "patientTransfers.patientProgram.patient.gender", "patientTransfers.patientProgram.patient.names", "patientTransfers.patientProgram.location.name");
     }
 
     private List<Location> getLocations(Integer locationId) {
@@ -210,6 +221,16 @@ public class SearchFragmentController {
 
             wrappers.add(pw);
         }
+        return wrappers;
+    }
+
+    private List<MdrtbTransferWrapper> mdrtbTransferWithDetails(List<PatientProgramTransfers> mdrtbTransfers){
+        List<MdrtbTransferWrapper> wrappers = new ArrayList<MdrtbTransferWrapper>();
+        for (PatientProgramTransfers transfers : mdrtbTransfers){
+            MdrtbTransferWrapper tw = new MdrtbTransferWrapper(transfers);
+            wrappers.add(tw);
+        }
+
         return wrappers;
     }
 

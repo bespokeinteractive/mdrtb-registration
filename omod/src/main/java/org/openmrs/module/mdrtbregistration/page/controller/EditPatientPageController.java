@@ -1,6 +1,7 @@
 package org.openmrs.module.mdrtbregistration.page.controller;
 
 import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
@@ -28,7 +29,12 @@ public class EditPatientPageController {
             UiUtils ui) {
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         model.addAttribute("patient", patient);
-        model.addAttribute("birthdate", df.format(patient.getBirthdate()));
+        if (patient.getBirthdate() != null){
+            model.addAttribute("birthdate", df.format(patient.getBirthdate()));
+        }
+        else {
+            model.addAttribute("birthdate", "");
+        }
     }
 
     public String post(HttpServletRequest request,
@@ -73,6 +79,7 @@ public class EditPatientPageController {
         pa.setStateProvince(request.getParameter("address.stateProvince"));
         pa.setPreferred(true);
 
+        patient.setGender(request.getParameter("patient.gender"));
         patient.addName(pn);
         patient.addAddress(pa);
         patient.setBirthdate(birthDate);

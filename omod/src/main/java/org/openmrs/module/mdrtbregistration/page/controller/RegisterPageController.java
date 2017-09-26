@@ -106,6 +106,8 @@ public class RegisterPageController {
         patient.setGender(request.getParameter("patient.gender"));
         patient.setBirthdate(birthDate);
         patient.setBirthdateEstimated(estimated);
+        patient.setCreator(session.getCurrentUser());
+        patient.setDateCreated(new Date());
 
         patient = Context.getPatientService().savePatient(patient);
 
