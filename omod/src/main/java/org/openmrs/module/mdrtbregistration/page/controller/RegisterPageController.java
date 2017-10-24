@@ -90,6 +90,7 @@ public class RegisterPageController {
         pi.setIdentifierType(new PatientIdentifierType(2));
         pi.setLocation(new Location(2));
         pi.setDateCreated(new Date());
+        pi.setCreator(session.getCurrentUser());
 
         PersonAddress pa = new PersonAddress();
         pa.setAddress1(request.getParameter("address.address1"));
@@ -98,6 +99,8 @@ public class RegisterPageController {
         pa.setCityVillage(request.getParameter("address.cityVillage"));
         pa.setStateProvince(request.getParameter("address.stateProvince"));
         pa.setPreferred(true);
+        pa.setCreator(session.getCurrentUser());
+        pa.setDateCreated(new Date());
 
         Patient patient = new Patient();
         patient.addName(pn);

@@ -17,7 +17,7 @@
 		searchTableObject.find('td.dataTables_empty').html('<span><img class="search-spinner" src="'+emr.resourceLink('uicommons', 'images/spinner.gif')+'" /></span>');
 		var requestData = {}
 		
-		jq.getJSON(emr.fragmentActionLink("mdrtbregistration", "search", "searchTransferredPatients"))
+		jq.getJSON(emr.fragmentActionLink("mdrtbregistration", "transfers", "searchTransferredPatients"))
 			.success(function (data) {
 				updateSearchResults(data);
 			}).error(function (xhr, status, err) {
@@ -32,7 +32,7 @@
 		_.each(searchResultsData, function(result){
 			var names = '<a href="../mdrtbdashboard/transferIn.page?patient='+result.patientTransfers.patientProgram.patient.patientId+'&programId='+result.patientTransfers.patientProgram.id+'">' + result.wrapperNames.toUpperCase() + '</a>';
 			var remarks = 'N/A';
-			var icons = '<a href="editPatient.page?patient=' + result.patientTransfers.patientProgram.patient.patientId + '"><i class="icon-edit small"></i></a> <a href="../mdrtbdashboard/transferIn.page?patient='+result.patientTransfers.patientProgram.patient.patientId+'&programId='+result.patientTransfers.patientProgram.id+'"><i class="icon-download-alt small"></i></a> <a><i class="icon-remove small" style="color: #f00"></i></a>';
+			var icons = '<a href="editPatient.page?patient=' + result.patientTransfers.patientProgram.patient.patientId + '"><i class="icon-edit small"></i></a> <a href="../mdrtbdashboard/transferIn.page?patient='+result.patientTransfers.patientProgram.patient.patientId+'&programId='+result.patientTransfers.patientProgram.id+'"><i class="icon-download-alt small"></i></a> <a class="remove-patient" data-idnt="'+result.patientTransfers.id+'"><i class="icon-remove small" style="color: #f00"></i></a>';
 			var gender = 'Male';
 			
 			if (result.patientTransfers.patientProgram.patient.gender == 'F'){
@@ -125,6 +125,66 @@
 		
 		jq('#searchPhrase').on('keyup', function(){
 			searchTable.api().search(this.value).draw();
+		});
+		
+		//
+		jq('#searchList').on('click', '.remove-patient', function(event){
+			var transferId = jq(this).data('idnt');
+			
+			jq.getJSON('${ui.actionLink("mdrtbregistration", "transfers" ,"getPatientTransferDetails")}', {
+				transferId : transferId
+			}).success(function (data) {
+				jq('#transferId').val(transferId);
+				jq('#patientIdnt').val(data.identifier);
+				jq('#patientName').val(data.names);				
+				jq('#transferFrom').val(data.from);
+				jq('#transferRemarks').val('');
+				
+			
+				voidDialog.show();
+			});
+		});
+		
+		var voidDialog = emr.setupConfirmationDialog({
+			dialogOpts: {
+				overlayClose: false,
+				close: true
+			},
+			selector: '#void-dialog',
+			actions: {
+				confirm: function() {
+					if (jq('#transferRemarks').val().trim() == ''){
+						jq().toastmessage('showErrorToast', 'Ensure that the reason for voiding the transfer has been specified');
+						return false;
+					}
+					
+					jq.ajax({
+						type: "POST",
+						url: '${ui.actionLink("mdrtbregistration", "transfers", "voidTransfers")}',
+						data: ({
+							transferId:	jq('#transferId').val(),
+							reasons:	jq('#transferRemarks').val()
+						}),
+						dataType: "json",
+						success: function(data) {
+							if (data.status == "success"){
+								jq().toastmessage('showSuccessToast', data.message);
+								window.location.href = "transfers.page?success=1";
+							}
+							else {
+								jq().toastmessage('showErrorToast', 'x:'+ data.message);
+							}							
+						},
+						error: function(data){
+							jq().toastmessage('showErrorToast', "Post Failed. " + data.statusText);
+						}
+					});
+					
+				},
+				cancel: function() {
+					voidDialog.close();
+				}
+			}
 		});
 		
 		getTransferPatients();
@@ -272,6 +332,62 @@
 		font-size: 0.75em;
 		margin: 20px 3px 0;
 	}
+	
+	#modal-overlay {
+		background: #000 none repeat scroll 0 0;
+		opacity: 0.3!important;
+	}
+	#visit-dialog.dialog {
+		width: 500px;
+	}	
+	.dialog .dialog-content li {
+		margin-bottom: 0;
+	}
+	.dialog-content ul li label{
+		display: inline-block;
+		width: 120px;
+	}
+	.dialog-content ul li input[type=text],
+	.dialog-content ul li select,
+	.dialog-content ul li textarea {
+		border: 1px solid #ddd;
+		display: inline-block;
+		height: 40px;
+		margin: 1px 0;
+		min-width: 20%;
+		padding: 5px 0 5px 10px;
+		width: 67%;
+	}
+	form input:focus, 
+	form select:focus, 
+	form textarea:focus, 
+	form ul.select:focus, 
+	.form input:focus, 
+	.form select:focus, 
+	.form textarea:focus, 
+	.form ul.select:focus {
+		background: lightyellow none repeat scroll 0 0;
+		outline: 0px none #007fff;
+	}
+	.add-on {
+		left: auto;
+		margin-left: -39px;
+		position: relative;
+	}	
+	.dialog select option {
+		font-size: 1em;
+	}
+	label span.mandatory {
+		color: #f00;
+		float: right;
+		padding-right: 5px;
+	}
+	.dialog ul {
+		margin-bottom: 20px;
+	}
+	.button.confirm{
+		margin-right: 6px;
+	}
 </style>
 
 <div class="clear"></div>
@@ -329,5 +445,48 @@
 				</table>
 			</div>
         </div>
+    </div>
+</div>
+
+<div id="void-dialog" class="dialog" style="display:none;">
+    <div class="dialog-header">
+        <i class="icon-folder-open"></i>
+        <h3>CANCEL TRANSFER</h3>
+    </div>
+
+    <div class="dialog-content">
+        <ul>
+			<li>
+				<label for="patientIdnt">
+					IDENTIFIER :
+				</label>
+				<input type="text" name="patient.identifier" id="patientIdnt" readonly="" />
+				<input type="hidden" name="transfer.id" id="transferId" readonly="" />
+			</li>
+			
+			<li>
+				<label for="patientName">
+					PATIENT :
+				</label>
+				<input type="text" name="patient.name" id="patientName" readonly="" />
+			</li>
+			
+			<li>
+				<label for="transferFrom">
+					FROM :
+				</label>
+				<input type="text" name="transfer.from" id="transferFrom" readonly="" />
+			</li>
+			
+			<li style="width:100%; border-top:1px dotted; padding-top:6px; margin-top:8px;">
+				<label for="transferRemarks" style="margin-top: 10px;">
+					REASONS :
+				</label>
+				<textarea id="transferRemarks" name="transfer.remarks" placeholder="Remarks" style="height:100px; resize:none;"></textarea>
+			</li>
+        </ul>
+
+        <label class="button confirm right">Confirm</label>
+        <label class="button cancel">Cancel</label>
     </div>
 </div>

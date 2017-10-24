@@ -107,14 +107,6 @@ public class SearchFragmentController {
         }
     }
 
-    public List<SimpleObject> searchTransferredPatients(UiUtils ui,
-                                                        UiSessionContext session) {
-        List<PatientProgramTransfers> transfers = Context.getService(MdrtbDashboardService.class).getPatientProgramTransfers(session.getSessionLocation(), false);
-        List<MdrtbTransferWrapper> wrapperList = mdrtbTransferWithDetails(transfers);
-
-        return SimpleObject.fromCollection(wrapperList, ui, "wrapperIdentifier", "wrapperNames", "wrapperDated", "patientTransfers.patientProgram.id", "patientTransfers.patientProgram.patient.patientId", "patientTransfers.patientProgram.patient.age", "patientTransfers.patientProgram.patient.gender", "patientTransfers.patientProgram.patient.names", "patientTransfers.patientProgram.location.name");
-    }
-
     private List<Location> getLocations(Integer locationId) {
         List<Location> locations = new ArrayList<Location>();
         if (locationId == 0){
@@ -221,16 +213,6 @@ public class SearchFragmentController {
 
             wrappers.add(pw);
         }
-        return wrappers;
-    }
-
-    private List<MdrtbTransferWrapper> mdrtbTransferWithDetails(List<PatientProgramTransfers> mdrtbTransfers){
-        List<MdrtbTransferWrapper> wrappers = new ArrayList<MdrtbTransferWrapper>();
-        for (PatientProgramTransfers transfers : mdrtbTransfers){
-            MdrtbTransferWrapper tw = new MdrtbTransferWrapper(transfers);
-            wrappers.add(tw);
-        }
-
         return wrappers;
     }
 

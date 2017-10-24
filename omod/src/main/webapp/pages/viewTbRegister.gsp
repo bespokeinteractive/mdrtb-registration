@@ -47,11 +47,13 @@
 		var dataRows = [];
 		_.each(registerResultsData, function(result){
 			var names = '<a class="redirect" data-idnt="' + result.patientProgram.patient.patientId + '" data-location="' + result.wrapperLocationId + '" data-program="'+result.patientProgram.id+'">' + result.wrapperNames + '</a>';		
-			var sites = result.patientDetails.diseaseSite?(result.patientDetails.diseaseSite.name == 'PULMONARY TUBERCULOSIS'?'PB':'EP'):'N/A';
-			var facility = result.patientDetails.facility?result.patientDetails.facility.name:'N/A';
-			var daamin = result.patientDetails.facility?result.patientDetails.daamin:'—';
+			var sites = result.patientDetails?(result.patientDetails.diseaseSite?(result.patientDetails.diseaseSite.name == 'PULMONARY TUBERCULOSIS'?'PB':'EP'):'N/A'):'&mdash;';
+			var facility = result.patientDetails?(result.patientDetails.facility?result.patientDetails.facility.name:'N/A'):'&mdash;';
+			var daamin = result.patientDetails?(result.patientDetails.facility?result.patientDetails.daamin:'&mdash;'):'&mdash;';
+			var ptcatg = result.patientDetails?(result.patientDetails.patientCategory?result.patientDetails.patientCategory.concept.name:'N/A'):'&mdash;';
+			var pttype = result.patientDetails?(result.patientDetails.patientType?result.patientDetails.patientType.concept.name:'N/A'):'&mdash;';
 			
-			dataRows.push([0, result.wrapperRegisterDate, result.wrapperIdentifier, names, result.patientProgram.patient.gender, result.patientProgram.patient.age, result.wrapperAddress, facility, daamin, 'YES', result.wrapperTreatmentDate, result.patientDetails.patientCategory.concept.name, sites, result.patientDetails.patientType.concept.name, result.tbVisits.resultZero, result.tbVisits.dateZero, result.tbVisits.hivZero, result.tbVisits.xrayZero, result.tbVisits.dateTwo, result.tbVisits.resultTwo, result.tbVisits.dateFive, result.tbVisits.resultFive, result.tbVisits.dateFinal, result.tbVisits.resultFinal, result.wrapperCompletedDate, result.wrapperOutcome, result.wrapperArt, result.wrapperCpt]);
+			dataRows.push([0, result.wrapperRegisterDate, result.wrapperIdentifier, names, result.patientProgram.patient.gender, result.patientProgram.patient.age, result.wrapperAddress, facility, daamin, 'YES', result.wrapperTreatmentDate, ptcatg, sites, pttype, result.tbVisits.resultZero, result.tbVisits.dateZero, result.tbVisits.hivZero, result.tbVisits.xrayZero, result.tbVisits.resultTwo, result.tbVisits.dateTwo, result.tbVisits.resultFive, result.tbVisits.dateFive, result.tbVisits.resultFinal, result.tbVisits.dateFinal, result.wrapperCompletedDate, result.wrapperOutcome, result.wrapperArt, result.wrapperCpt]);
 		});
 
 		registerTable.api().clear();
@@ -383,7 +385,7 @@
 		width: 1900px;
 	}
 	table {
-		font-size: 10px;
+		font-size: 8px;
 	}
 	.advanced {
 		background: #363463 none repeat scroll 0 0;
