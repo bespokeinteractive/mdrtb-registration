@@ -388,7 +388,7 @@
 		
 		<li>
 			<i class="icon-chevron-right link"></i>
-			<a href="${ui.pageLink('registration','patientRegistration')}">Registration</a>
+			<a href="${ui.pageLink('mdrtbregistration','register')}">Registration</a>
 		</li>
 		
 		<li>
