@@ -16,17 +16,10 @@
 	var getMdrtbpatients = function(){
 		searchTableObject.find('td.dataTables_empty').html('<span><img class="search-spinner" src="'+emr.resourceLink('uicommons', 'images/spinner.gif')+'" /></span>');
 		var requestData = {
-			phrase: 		'',
-			gender: 		'',
-			age: 			'',
-			ageRange: 		0,
-			lastDayOfVisit:	'',
-			lastVisit: 		0,
-			programId:		${program},
-			locations:		locationId?locationId:${sessionContext.sessionLocationId}
+			programId:	${program}
 		}
 		
-		jq.getJSON(emr.fragmentActionLink("mdrtbregistration", "search", "searchRegister"), requestData)
+		jq.getJSON(emr.fragmentActionLink("mdrtbregistration", "search", "searchActivePatients"), requestData)
 			.success(function (data) {
 				updateSearchResults(data);
 			}).error(function (xhr, status, err) {
@@ -39,16 +32,16 @@
 		searchResultsData = results || [];
 		var dataRows = [];
 		_.each(searchResultsData, function(result){
-			var names = '<a href="../mdrtbdashboard/main.page?patient='+result.patientProgram.patient.patientId+'&programId='+result.patientProgram.id+'">' + result.wrapperNames + '</a>';
+			var names = '<a href="../mdrtbdashboard/main.page?patient='+result.patientDetails.patientProgram.patient.patientId+'&programId='+result.patientDetails.patientProgram.id+'">' + result.wrapperNames + '</a>';
 			var remarks = 'N/A';
-			var icons = '<a href="editPatient.page?patient=' + result.patientProgram.patient.patientId + '"><i class="icon-edit small"></i></a> <a href="../mdrtbdashboard/main.page?patient=' + result.patientProgram.patient.patientId + '"><i class="icon-group small"></i></a> <a href="../mdrtbdashboard/main.page?patient=' + result.patientProgram.patient.patientId + '&tabs=chart"><i class="icon-bar-chart small"></i></a> <a class="remove-patient" data-idnt='+result.patientProgram.id+'><i class="icon-remove small red"></i></a>';
+			var icons = '<a href="editPatient.page?patient=' + result.patientDetails.patientProgram.patient.patientId + '"><i class="icon-edit small"></i></a> <a href="../mdrtbdashboard/main.page?patient=' + result.patientDetails.patientProgram.patient.patientId + '"><i class="icon-group small"></i></a> <a href="../mdrtbdashboard/main.page?patient=' + result.patientDetails.patientProgram.patient.patientId + '&tabs=chart"><i class="icon-bar-chart small"></i></a> <a class="remove-patient" data-idnt='+result.patientDetails.patientProgram.id+'><i class="icon-remove small red"></i></a>';
 			var gender = 'Male';
 			
-			if (result.patientProgram.patient.gender == 'F'){
+			if (result.patientDetails.patientProgram.patient.gender == 'F'){
 				gender = 'Female';
 			}
 			
-			dataRows.push([0, result.wrapperIdentifier, names, result.patientProgram.patient.age, gender, result.wrapperStatus, icons]);
+			dataRows.push([0, result.wrapperIdentifier, names, result.patientDetails.patientProgram.patient.age, gender, result.patientDetails.patientProgram.program.name, icons]);
 		});
 
 		searchTable.api().clear();
