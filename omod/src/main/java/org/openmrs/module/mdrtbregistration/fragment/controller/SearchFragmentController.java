@@ -10,12 +10,9 @@ import org.openmrs.module.mdrtb.service.MdrtbService;
 import org.openmrs.module.mdrtbdashboard.MdrtbActiveWrapper;
 import org.openmrs.module.mdrtbdashboard.MdrtbPatientWrapper;
 import org.openmrs.module.mdrtbdashboard.MdrtbRegisterWrapper;
-import org.openmrs.module.mdrtbdashboard.MdrtbTransferWrapper;
 import org.openmrs.module.mdrtbdashboard.api.MdrtbDashboardService;
-import org.openmrs.module.mdrtbdashboard.model.PatientProgramDetails;
-import org.openmrs.module.mdrtbdashboard.model.PatientProgramTransfers;
+import org.openmrs.module.mdrtb.model.PatientProgramDetails;
 import org.openmrs.module.mdrtbdashboard.util.DateRangeModel;
-import org.openmrs.module.mdrtbregistration.util.PatientUtils;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,7 +27,7 @@ import java.util.List;
  */
 
 public class SearchFragmentController {
-    MdrtbDashboardService dashboardService = Context.getService(MdrtbDashboardService.class);
+    MdrtbService service = Context.getService(MdrtbService.class);
 
     public List<SimpleObject> searchPatient(
             @RequestParam(value = "phrase", required = false) String phrase,
@@ -81,7 +78,7 @@ public class SearchFragmentController {
         Integer programId = getInt(request.getParameter("programId"));
         Program program = Context.getProgramWorkflowService().getProgram(programId);
 
-        List<PatientProgramDetails> active = dashboardService.getActivePatients(session.getSessionLocation(), program);
+        List<PatientProgramDetails> active = service.getActivePatients(session.getSessionLocation(), program);
         List<MdrtbActiveWrapper> wrapperList = mdrtbActiveWrappedPatients(active);
 
         return SimpleObject.fromCollection(wrapperList, ui, "wrapperIdentifier", "wrapperNames", "patientDetails.patientProgram.id", "patientDetails.patientProgram.patient.patientId", "patientDetails.patientProgram.patient.gender", "patientDetails.patientProgram.patient.age", "patientDetails.patientProgram.program.name");

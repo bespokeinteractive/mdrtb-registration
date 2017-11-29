@@ -5,10 +5,11 @@ import org.openmrs.PatientProgram;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.appui.UiSessionContext;
+import org.openmrs.module.mdrtb.service.MdrtbService;
 import org.openmrs.module.mdrtbdashboard.MdrtbTransferWrapper;
 import org.openmrs.module.mdrtbdashboard.api.MdrtbDashboardService;
-import org.openmrs.module.mdrtbdashboard.model.PatientProgramDetails;
-import org.openmrs.module.mdrtbdashboard.model.PatientProgramTransfers;
+import org.openmrs.module.mdrtb.model.PatientProgramDetails;
+import org.openmrs.module.mdrtb.model.PatientProgramTransfers;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,11 +24,12 @@ import java.util.List;
  */
 public class TransfersFragmentController {
     MdrtbDashboardService dashboardService = Context.getService(MdrtbDashboardService.class);
+    MdrtbService mdrtbService = Context.getService(MdrtbService.class);
     ProgramWorkflowService workflowService = Context.getProgramWorkflowService();
 
     public SimpleObject getPatientTransferDetails(@RequestParam(value = "transferId") Integer id){
-        PatientProgramTransfers ppt = dashboardService.getPatientProgramTransfers(id);
-        PatientProgramDetails ppd = dashboardService.getPatientProgramDetails(ppt.getPatientProgram());
+        PatientProgramTransfers ppt = mdrtbService.getPatientProgramTransfers(id);
+        PatientProgramDetails ppd = mdrtbService.getPatientProgramDetails(ppt.getPatientProgram());
         Patient patient = ppt.getPatientProgram().getPatient();
         String names = patient.getGivenName() + " " + patient.getFamilyName();
         if (patient.getMiddleName() != null){
@@ -39,7 +41,7 @@ public class TransfersFragmentController {
 
     public List<SimpleObject> searchTransferredPatients(UiUtils ui,
                                                         UiSessionContext session) {
-        List<PatientProgramTransfers> transfers = Context.getService(MdrtbDashboardService.class).getPatientProgramTransfers(session.getSessionLocation(), false);
+        List<PatientProgramTransfers> transfers = mdrtbService.getPatientProgramTransfers(session.getSessionLocation(), false);
         List<MdrtbTransferWrapper> wrapperList = mdrtbTransferWithDetails(transfers);
 
         return SimpleObject.fromCollection(wrapperList, ui, "wrapperIdentifier", "wrapperNames", "wrapperDated", "patientTransfers.id", "patientTransfers.patientProgram.id", "patientTransfers.patientProgram.patient.patientId", "patientTransfers.patientProgram.patient.age", "patientTransfers.patientProgram.patient.gender", "patientTransfers.patientProgram.patient.names", "patientTransfers.patientProgram.location.name");
@@ -58,21 +60,21 @@ public class TransfersFragmentController {
     public SimpleObject voidTransfers(@RequestParam(value = "transferId") Integer transferId,
                                       @RequestParam(value = "reasons") String reasons,
                                       UiSessionContext session){
-        PatientProgramTransfers ppt = dashboardService.getPatientProgramTransfers(transferId);
-        PatientProgramDetails ppd = dashboardService.getPatientProgramDetails(ppt.getPatientProgram());
+        PatientProgramTransfers ppt = mdrtbService.getPatientProgramTransfers(transferId);
+        PatientProgramDetails ppd = mdrtbService.getPatientProgramDetails(ppt.getPatientProgram());
         PatientProgram pp = ppt.getPatientProgram();
         pp.setDateCompleted(null);
         pp.setOutcome(null);
         ppd.setOutcome(null);
 
         this.workflowService.savePatientProgram(pp);
-        this.dashboardService.savePatientProgramDetails(ppd);
+        this.mdrtbService.savePatientProgramDetails(ppd);
 
         ppt.setVoided(true);
         ppt.setVoidedOn(new Date());
         ppt.setVoidedBy(Context.getAuthenticatedUser().getId());
         ppt.setVoidReason(reasons);
-        this.dashboardService.savePatientProgramTransfers(ppt);
+        this.mdrtbService.savePatientProgramTransfers(ppt);
 
         return SimpleObject.create("status", "success", "message", "Transfer successfully voided!");
     }

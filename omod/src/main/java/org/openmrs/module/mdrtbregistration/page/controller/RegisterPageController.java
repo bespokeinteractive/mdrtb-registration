@@ -88,7 +88,7 @@ public class RegisterPageController {
         PatientIdentifier pi = new PatientIdentifier();
         pi.setIdentifier(identifier);
         pi.setIdentifierType(new PatientIdentifierType(2));
-        pi.setLocation(new Location(2));
+        pi.setLocation(session.getSessionLocation());
         pi.setDateCreated(new Date());
         pi.setCreator(session.getCurrentUser());
 
